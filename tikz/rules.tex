@@ -1,0 +1,138 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+\catcode`\$=3\relax
+\resizebox{.98\textwidth}{!}{
+
+\begin{tikzpicture}
+[node distance=2.2em,
+pragma/.style={fill=red!5},
+stage/.style={draw=none, font={}, text width=6em, align=center},
+num/.style={font={\small\ttfamily}, draw=none},
+every edge/.style={draw, -{Latex[length=.6em, width=.6em]}, line width=.1em},
+every node/.style={minimum height=1.8em, font={\ttfamily}, draw, line width=.05em, anchor=east, outer sep=.3em}]
+
+\pgfmathsetmacro{\dist}{3.8}
+
+\node[anchor=west] (i1) {aload\_1};
+  \node[num, anchor=east] at (i1.west) {1:};
+\node[below=of i1.west, anchor=west] (i2) {invokestatic};
+  \node[num, anchor=east] at (i2.west) {2:};
+\node[below=of i2.west, anchor=west] (i3) {invokedynamic};
+  \node[num, anchor=east] at (i3.west) {3:};
+\node[below=of i3.west, anchor=west] (i4) {invokeinterface};
+  \node[num, anchor=east] at (i4.west) {4:};
+\node[below=of i4.west, anchor=west] (i5) {invokedynamic};
+  \node[num, anchor=east] at (i5.west) {5:};
+\node[below=of i5.west, anchor=west] (i6) {invokeinterface};
+  \node[num, anchor=east] at (i6.west) {6:};
+\node[below=of i6.west, anchor=west] (i7) {invokeinterface};
+  \node[num, anchor=east] at (i7.west) {7:};
+\node[below=of i7.west, anchor=west] (i8) {ireturn};
+  \node[num, anchor=east] at (i8.west) {8:};
+
+\node[fit=(i3) (i4), draw=none, inner sep=0, outer sep=0] (map) {};
+\node[fit=(i5) (i6), draw=none, inner sep=0, outer sep=0] (filter) {};
+\node[pragma, right=\dist of map.west, anchor=west] (i3a) {\(\Phi\).map};
+\node[pragma, right=\dist of filter.west, anchor=west] (i5a) {\(\Phi\).filter};
+
+\node[right=\dist of i1.west, anchor=west] (i1a) {aload\_1};
+\node[right=\dist of i2.west, anchor=west] (i2a) {invokestatic};
+\node[right=\dist of i7.west, anchor=west] (i7a) {invokeinterface};
+\node[right=\dist of i8.west, anchor=west] (i8a) {ireturn};
+
+\draw (i1.east) edge (i1a.west);
+\draw (i2.east) edge (i2a.west);
+\path
+  let
+    \p1 = ([xshift=.3em,yshift=-.4em]map.north east),
+    \p2 = ([xshift=.3em,yshift=.4em]map.south east),
+    \p3 = ($(\p1)!0.5!(\p2)$)
+  in
+    (\p1) edge[-] (\p2)
+    (\p3) edge (i3a.west);
+\path
+  let
+    \p1 = ([xshift=.3em,yshift=-.4em]filter.north east),
+    \p2 = ([xshift=.3em,yshift=.4em]filter.south east),
+    \p3 = ($(\p1)!0.5!(\p2)$)
+  in
+    (\p1) edge[-] (\p2)
+    (\p3) edge (i5a.west);
+\draw (i7.east) edge (i7a.west);
+\draw (i8.east) edge (i8a.west);
+
+\node[right=\dist of i1a.west, anchor=west] (i1b) {aload\_1};
+\node[right=\dist of i2a.west, anchor=west] (i2b) {invokestatic};
+\node[right=\dist of i7a.west, anchor=west] (i7b) {invokeinterface};
+\node[right=\dist of i8a.west, anchor=west] (i8b) {ireturn};
+\node[pragma, right=\dist of i3a.west, anchor=west] (i3b) {\(\Phi\).distill};
+\node[pragma, right=\dist of i5a.west, anchor=west] (i5b) {\(\Phi\).distill};
+\draw (i1a.east) edge (i1b.west);
+\draw (i2a.east) edge (i2b.west);
+\draw (i3a.east) edge (i3b.west);
+\draw (i5a.east) edge (i5b.west);
+\draw (i7a.east) edge (i7b.west);
+\draw (i8a.east) edge (i8b.west);
+
+\node[fit=(i3b) (i5b), draw=none, inner sep=0, outer sep=0] (distill) {};
+\node[right=\dist of i1b.west, anchor=west] (i1c) {aload\_1};
+\node[right=\dist of i2b.west, anchor=west] (i2c) {invokestatic};
+\node[right=\dist of i7b.west, anchor=west] (i7c) {invokeinterface};
+\node[right=\dist of i8b.west, anchor=west] (i8c) {ireturn};
+\node[pragma, right=\dist of distill.west, anchor=west] (i3c) {\(\Phi\).distill};
+\path
+  let
+    \p1 = ([xshift=.3em,yshift=-.4em]distill.north east),
+    \p2 = ([xshift=.3em,yshift=.4em]distill.south east),
+    \p3 = ($(\p1)!0.5!(\p2)$)
+  in
+    (\p1) edge[-] (\p2)
+    (\p3) edge (i3c.west);
+\draw (i1b.east) edge (i1c.west);
+\draw (i2b.east) edge (i2c.west);
+\draw (i7b.east) edge (i7c.west);
+\draw (i8b.east) edge (i8c.west);
+
+\node[right=\dist of i1c.west, anchor=west] (i1d) {aload\_1};
+\node[right=\dist of i2c.west, anchor=west] (i2d) {invokestatic};
+\node[right=\dist of i7c.west, anchor=west] (i7d) {invokeinterface};
+\node[right=\dist of i8c.west, anchor=west] (i8d) {ireturn};
+\node[pragma, right=\dist of i3c.west, anchor=west] (i3d) {\(\Phi\).mapMulti};
+\draw (i1c.east) edge (i1d.west);
+\draw (i2c.east) edge (i2d.west);
+\draw (i3c.east) edge (i3d.west);
+\draw (i7c.east) edge (i7d.west);
+\draw (i8c.east) edge (i8d.west);
+
+\pgfmathsetmacro{\edist}{5*\dist}
+\node[right=\dist of i1d.west, anchor=west] (i1e) {aload\_1};
+\node[right=\dist of i2d.west, anchor=west] (i2e) {invokestatic};
+\node[right=\edist of i4.west, anchor=west] (i4e) {invokedynamic};
+\node[right=\edist of i5.west, anchor=west] (i5e) {invokeinterface};
+\node[right=\dist of i7d.west, anchor=west] (i7e) {invokeinterface};
+\node[right=\dist of i8d.west, anchor=west] (i8e) {ireturn};
+\draw (i1d.east) edge (i1e.west);
+\draw (i2d.east) edge (i2e.west);
+\draw (i7d.east) edge (i7e.west);
+\draw (i8d.east) edge (i8e.west);
+\path
+  let
+    \p1 = ([xshift=-2em]i4e.west),
+    \p2 = ([xshift=-2em]i5e.west),
+    \p3 = ($(\p1)!0.5!(\p2)$)
+  in
+    (i3d.east) edge[-] (\p3)
+    (\p1) edge[-] (\p2)
+    (\p1) edge (i4e.west)
+    (\p2) edge (i5e.west);
+
+\node[stage, anchor=north] at ([xshift=-1em, yshift=-1em] i8a.west) {1) Rewriting instructions to pragmas};
+\node[stage, anchor=north] at ([xshift=-1em, yshift=-1em] i8b.west) {2) Rewriting mapping and filtering pragmas to distilling pragmas};
+\node[stage, anchor=north] at ([xshift=-1em, yshift=-1em] i8c.west) {3) Merging distilling pragmas};
+\node[stage, anchor=north] at ([xshift=-1em, yshift=-1em] i8d.west) {4) Rewriting distilling to mapMulti pragmas};
+\node[stage, anchor=north] at ([xshift=-1em, yshift=-1em] i8e.west) {5) Rewriting pragmas to instructions};
+\end{tikzpicture}
+
+}
+\catcode`\$=\active

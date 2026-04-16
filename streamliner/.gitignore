@@ -1,0 +1,12 @@
+*.class
+.claude/
+/*.iml
+/.idea
+/lib
+/misc/out.csv
+/misc/out.json
+/misc/pdfs
+/out
+/RQ2/repos
+/transformed
+Misc.java

@@ -1,0 +1,19 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+Eliminating intermediate structures in functional programs, known as ``deforestation'' or fusion~\citep{hirzel2014catalog}, has been studied since the late \novale{Google.Units}{1980s}~\citep{wadler1990deforestation} and implemented in compilers such as GHC~\citep{gill1993fusion}.
+A common approach is deductive fusion~\citep{bird1989calculation,meijer1991bananas,chin1992fusion,takano1995deforestation,bird1997algebra,hamilton2002deforestation,coutts2007,hinze2011fusion}, which applies rewrite rules to produce optimized programs.
+Similar techniques have been applied to OCaml and Scala through staging~\citep{kiselyov2017}, and recent work on \textsc{SuperFusion}~\citep{ji2024superfusion} relies on supercompilation.
+
+In object-oriented languages, \citet{kiselyov2017} proposed stream fusion via \textit{strymonas} for Scala and OCaml, though it cannot be adapted to Java due to missing metaprogramming capabilities~\citep{kiselyov2024complete}.
+\citet{ribeiro2018java} introduced a Java library transforming streams into loops, but both approaches require switching from the standard Stream API.
+\citet{khatchadourian2020safe} developed an Eclipse plug-in for detecting parallelizable streams, observing 3.5x speedups, while \citet{basso2022optimizing} proposed stream parallelization for optimization.
+\citet{moller2020eliminating} introduced compile-time stream unrolling via \streamliner{}, demonstrating improvements on benchmarks by \citet{biboudis2014clash}.
+Similar solutions exist for C\# (Steno~\citep{murray2011steno}) and F\# (LinqOptimizer).
+
+For bytecode manipulation, frameworks such as ASM, Byte Buddy, Javassist, and Apache Commons BCEL provide imperative APIs requiring manual traversal.
+Analysis-orien\-ted tools translate bytecode into intermediate representations: Doop uses Datalog facts, WALA~IR~\citep{santos2022program} provides SSA-style analysis, OPAL~\citep{eichberg2014software} and TACAI~\citep{reif2020tacai} offer three-address code, and Tai-e~\citep{tian23tai} focuses on static analysis.
+Soot~\citep{vallee1999soot} provides multiple IRs (Baf, Jimple, Shimple, Grimp) for transformation, while GraalVM~\citep{duboscq2013graal} uses internal graph-based IRs for compilation.
+Krakatau offers textual bytecode encoding without formal semantics.
+All these tools rely on imperative transformation or analysis-orien\-ted IRs without declarative rewriting support.
+In contrast, \phino{} enables developers to specify rewriting rules that the system applies automatically, shifting effort from imperative traversal to concise, formally specified rewrites.

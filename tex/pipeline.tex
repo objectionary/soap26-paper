@@ -1,0 +1,105 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+To reason about and transform bytecode structurally, we encode it as \(\varphi\)-expressions,
+  a minimal, uniform representation that exposes both instructions and metadata in a single composable form.
+The full calculus was introduced by \citet{bugayenko2021eolang}; we use a subset sufficient to represent Java bytecode.
+
+\Cref{fig:jeo} shows a stream pipeline compiled to bytecode and then disassembled into a \(\varphi\)-expression.
+Because \phic{} uses composable symbolic structures, its expressions are amenable to rule-based rewriting.
+For example, the following rule transforms \ff{IMUL} to \ff{IADD}, where \(B_1\) and \(B_2\) match any sequence of key–value pairs:
+\begin{phiquation*}
+ \frg{pattern}{ [[ B_1, @ -> Q.imul, B_2 ]] } \longrightarrow \frg{replacement}{ [[ B_1, @ -> Q.iadd, B_2 ]] }.
+\end{phiquation*}
+Rules may use functions from \phino{}, our rewriting engine.
+The following rule renames classes matching a pattern:
+\begin{phiquation*}
+ [[ B_1, name -> e_1, B_2 ]] \longrightarrow [[ B_1, name -> e_2, B_2 ]]
+   \qquad\qquad\text{when}\quad |matches| {(} |"\char94Nums\textdollar{}"| {,} e_1 {)}
+   \qquad\qquad\text{where}\quad e_2 := |concat| {(} |"Op"| {,} |name| {)} {.}
+\end{phiquation*}
+Rules are applied repeatedly until none match; order is irrelevant.
+
+We scan bytecode files using the ASM library\footnote{\url{https://asm.ow2.io/}} and disassemble them into \(\varphi\)-expressions (one \ff{.class} file produces one \ff{.phi} file).
+
+\begin{figure*}
+\setthreecapwidths{0.31}{0.27}
+\begin{subfigure}[t]{\firstsf}
+\begin{ffcode}
+import
+  java.util.stream.*;
+class Numbers {
+ int total(int[] a) {
+  return IntStream
+   .of(a)
+   .map((*@\highlight{x -> x * x}@*))
+   .sum();
+ }
+}
+\end{ffcode}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{\secondsf}
+\begin{ffcode}
+public Numbers():
+ aload_0
+ invokespecial
+ return
+public int
+  total(int[]):
+ aload_1
+ invokestatic
+ invokedynamic
+ invokeinterface
+ invokeinterface
+ ireturn
+private static int
+  (*@\highlight{total\textdollar{}0}@*)(int):
+ iload_0
+ iload_0
+ imul
+ ireturn
+\end{ffcode}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{\thirdsf}
+\begin{phiquation*}
+[[ |j\textdollar{}Numbers| -> [[
+  @ -> Q.class,
+  version -> 61,
+  access -> 33,
+  supername ->
+    "java/lang/Object",
+  interfaces -> [[ ]],
+  |j\textdollar{}object\char64init\char64| -> [[\dots]],
+  |j\textdollar{}total| -> [[\dots]],
+  |\highlight{j\textdollar{}total\textdollar{}0}| -> [[
+    @ -> Q.method,
+    access -> 4106,
+    descriptor -> "(I)I",
+    body -> [[
+      @ -> Q.seq.of6,
+      i2 -> [[ @ -> Q.iload, |v| -> 0 ]],
+      i3 -> [[ @ -> Q.iload, |v| -> 0 ]],
+      i4 -> [[ @ -> Q.imul ]],
+      i5 -> [[ @ -> Q.ireturn ]] ]] ]] ]] ]]
+\end{phiquation*}
+\end{subfigure}
+\threefigcaps
+  {jeo}
+  {Java class.}
+  {Bytecode, from \ff{javap}.}
+  {Simplified \(\varphi\)-expression.}
+  {Java class after compilation and disassembly to \(\varphi\)-expression.}
+\end{figure*}
+
+Each instruction becomes a formation qualified by a dispatch (e.g., $Q.class$ for classes, $Q.method$ for methods); parameterized instructions like \ff{ILOAD} carry their parameters as attributes.
+Java names are prefixed with \ff{j\textdollar{}} to distinguish them from meta-attributes.
+
+The Java compiler translates lambda expressions into \ff{invokedynamic} and \ff{invokeinterface} instruction pairs~\citep{rose2009bytecodes}.
+We re\-write these pairs into \pragma{filter} or \pragma{map} pragmas---\phic{} formations that temporarily carry rewriting data but don't exist in the final bytecode.
+
+Both \pragma{filter} and \pragma{map} are then unified into \pragma{distill}, an abstraction accepting an item and returning \ff{void}.
+Consecutive \pragma{distill} pragmas are merged by concatenating their lambda bodies.
+Finally, \pragma{distill} pragmas become \pragma{mapMulti} pragmas, which generate new private static methods containing the merged logic plus a call to the \ff{Consumer}'s \ff{accept} method.
+The pragmas are then transformed back into instructions and reassembled into bytecode via ASM.

@@ -1,0 +1,24 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+\textbf{RQ1: \texttt{mapMulti()} worked faster than \texttt{map()} + \texttt{filter()}}.
+We used the same benchmark as \citet{moller2020eliminating}, since other Java benchmarks (SPECjbb~2015, DaCapo, Renaissance) either don't use the Stream API or contain only trivial pipelines.
+\Cref{tab:streamliner-vs-hone} shows JMH measurements on two Zulu JVM versions; ratios below \(1.0\) indicate speedup.
+
+\begin{table*}
+\figcap{Optimization effect of \streamliner{} (``{\scshape Strm}'' column) compared with our method (``\hone{}'' column) on two Zulu JVM versions. Each ratio divides optimized time by original time.}
+\intabular{streamliner-vs-hone}
+\end{table*}
+
+On the latest JVM, three benchmarks (\ff{sum}, \ff{sumOfSquares}, \ff{sumOfSquaresEven}) showed no improvement from either method.
+Two benchmarks (\ff{megamorphic*}) ran faster with both.
+Two benchmarks (\ff{allMatch}, \ff{count}) improved only with \streamliner{}, as our method doesn't modify these terminal operations.
+Notably, two benchmarks (\ff{filterCount}, \ff{filterMapCount}) ran slower after \streamliner{} but showed no degradation with our method.
+Overall, our optimization either preserved speed or produced up to 5x improvements, with no performance degradation.
+
+\textbf{RQ2: The optimization didn't disrupt existing functionality}.
+We applied \hone{} to Apache Kafka (tag~4.0.0): 992k lines of Java, 142k lines of Scala, 31,799 unit tests.
+After disabling 13 flaky tests, the original build took 120 minutes; with \hone{} injected into \ff{build.gradle}, it took 165 minutes and affected 15k \ff{.class} files.
+All tests passed without additional modifications.
+We also integrated \hone{} into its own Maven release pipeline; after 50+ releases, no functionality was disrupted.
+The modified Kafka is available at: \anon[URL anonymized]{\url{https://github.com/objectionary/kafka}}.

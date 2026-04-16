@@ -1,0 +1,16 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+Our method requires JDK~16 or newer due to \ff{mapMulti}, is hardwired to the Stream API tested on JDK~24, and currently transforms only \ff{map} and \ff{filter} among the eleven intermediate operations (\ff{dropWhile}, \ff{flatMap}, \ff{gather}, \ff{limit}, \ff{peek}, \ff{skip}, \ff{sorted}, \ff{takeWhile}, etc.).
+We cannot fuse closures --- lambdas capturing outer variables --- because bytecode places \ff{ILOAD} and \ff{ALOAD} instructions between stream operations, breaking the consecutive pattern our rewriting rules expect.
+Similarly, we cannot fuse functional objects (e.g., \ff{new Square()} instead of lambdas) as they compile to \ff{new}/\ff{invokespecial} rather than \ff{invokedynamic}.
+Code relying on Reflection to inspect bytecode structure may break, though such practice is uncommon.
+Line metadata may be damaged, affecting debugging.
+
+Build time increased by 45 minutes (37\%) for Apache Kafka; merging the current two-component architecture (Java+XSLT and Haskell) into a unified stack may improve this.
+We lack micro-level profiling (allocation counts, JIT inlining traces) to clarify the source of performance gains, and we did not compare with JIT-level optimizations such as Graal or HotSpot intrinsics.
+
+Regarding validity: we tested with arrays of \input{_env/numbers.tex} million \ff{int} elements---results may differ with other sizes, types, or objects.
+The benchmark by \citet{moller2020eliminating} has low complexity compared to real-world pipelines, lacking method references and autoboxing.
+We used a single JVM vendor and hardware configuration with JMH measurements, where JIT behavior variations could affect outcomes.
+While Apache Kafka covers nearly one million lines of code, it may not represent all Stream API usage patterns, limiting generalizability to other codebases.

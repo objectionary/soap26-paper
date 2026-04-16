@@ -1,0 +1,18 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+\begin{abstract}
+
+The Java Stream API, introduced in Java~8, makes data processing more expressive and concise compared to imperative loops.
+However, this abstraction can come with significant performance overhead, often due to the creation of multiple intermediate objects during pipeline execution.
+In functional languages such as Haskell, this problem is addressed through stream fusion, a compile-time optimization that eliminates unnecessary intermediate structures.
+Inspired by this idea, \streamliner{} was the first tool to perform ahead-of-time, bytecode-to-bytecode stream optimization for Java by unrolling stream pipelines into imperative loops.
+%
+In this paper, we introduce an open-source optimizer that takes a different approach.
+Instead of unrolling streams into loops, it merges consecutive \ff{map()} and \ff{filter()} operations into a single \ff{mapMulti()} call, available since Java 16.
+Our method avoids several limitations of \streamliner{}, including its sensitivity to escaping objects in lambda expressions and its restrictions on assigning or passing streams as variables.
+%
+We evaluated our optimizer on nine benchmarks and observed superior performance in two cases and comparable results in most others.
+We also applied it to the bytecode of Apache Kafka, successfully executing all 31,799 unit tests without failures.
+
+\end{abstract}

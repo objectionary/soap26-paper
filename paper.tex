@@ -1,0 +1,167 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+\PassOptionsToPackage{english}{babel}
+\PassOptionsToPackage{svgnames}{xcolor}
+\documentclass[sigplan,screen,nonacm,anonymous]{acmart}
+\makeatletter\let\@authorsaddresses\@empty\makeatother
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[noframes]{ffcode}
+\usepackage{anyfontsize}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{csquotes}
+\usepackage{doi}
+\usepackage{amsmath}
+\usepackage{eolang}
+\usepackage{hyperref}
+\usepackage{mathtools}
+\usepackage{mdframed}
+\usepackage{multicol}
+\usepackage{naive-ebnf}
+\usepackage{nameref}
+\usepackage{paralist}
+\usepackage{semantic}
+\usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{tcolorbox}
+\usepackage{tikz}
+  \usetikzlibrary{backgrounds}
+  \usetikzlibrary{fit}
+  \usetikzlibrary{arrows.meta}
+\usepackage{textcomp}
+\usepackage{to-be-determined}
+\usepackage{url}
+\usepackage{xurl}
+\usepackage[shortlabels]{enumitem} % for changing labes in "enumerate" (must stay last)
+\usepackage[capitalize,nameinlink]{cleveref} % must stay last!
+
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.9}
+\setcounter{topnumber}{3}
+
+\title{Compile-Time Java Stream Fusion via \texttt{mapMulti}}
+\date{\today}
+
+\author{Yegor Bugayenko}
+% \orcid{0000-0001-6370-0678}
+\email{yegor256@gmail.com}
+\affiliation{Huawei\city{Shenzhen}\country{China}}
+%
+\author{Maxim Trunnikov}
+% \orcid{0000-0001-8545-4797}
+\email{mtrunnikov@gmail.com}
+\affiliation{Huawei\city{Shenzhen}\country{China}}
+%
+\author{Vladimir Zakharov}
+% \orcid{0009-0007-2420-5675}
+\email{volodya.lombrozo@gmail.com}
+\affiliation{Huawei\city{Shenzhen}\country{China}}
+
+\ccsdesc[100]{Object-Oriented Programming}
+\keywords{Java, Object-Oriented Programming}
+
+\def\trans{\mathrel{\leadsto}}
+\newcommand\figcap[1]{%
+  % \Description{#1}%
+  \caption{#1}%
+}
+\newcommand\pragma[1]{\texttt{\texorpdfstring{\(\Phi\)}{Q}.#1}}
+\newcommand\novale[2]{#2}
+\newcommand\highlight[1]{{\color{orange}\ifmmode\text{#1}\else#1\fi}}
+\newcommand\hone{\anon[T1]{\scshape Hone}}
+\newcommand\tool[1]{{\sffamily #1}}
+\newcommand\streamliner{{\scshape Streamliner}}
+\newcommand\jeo{\anon[T2]{\scshape Jeo}}
+\newcommand\phino{\anon[T3]{{\scshape Phino}}}
+\newcommand\requ[1]{\textbf{RQ#1}}
+\newcommand\intabular[1]{%
+  \begin{center}%
+  \input{tables/#1/table-compact.tex}%
+  \label{tab:#1}%
+  \end{center}}
+
+\makeatletter
+\newcommand\frg[2]{%
+  \def\param{#1}%
+  {\overbracket[0.4pt][1pt]{#2}^{{\ifx\param\empty\else\color{gray}\text{\sffamily#1}\fi}}}}
+\makeatother
+
+\lstset{backgroundcolor=\color{white}}
+
+\exhyphenpenalty=10000% to avoid line breaks before and after mdash
+\widowpenalty=5000% to have less widows
+\clubpenalty=5000% to have less orphans
+\interfootnotelinepenalty=10000% to format footnotes better
+\tolerance=1000% allow looser word spacing
+\emergencystretch=2em% extra stretch to avoid overfull hboxes
+
+\newlength{\firstsf}
+\newlength{\secondsf}
+\newlength{\thirdsf}
+\newcommand\settwocapwidths[1]{
+  \setlength{\firstsf}{#1\linewidth}
+  \setlength{\secondsf}{\linewidth - \firstsf - 1em}}
+\newcommand\setthreecapwidths[2]{
+  \setlength{\firstsf}{#1\linewidth}
+  \setlength{\secondsf}{#2\linewidth}
+  \setlength{\thirdsf}{\linewidth - \firstsf - \secondsf - 1em}}
+\newcommand\twofigcaps[4]{
+  \begin{subfigure}[t]{\firstsf}
+  \figcap{#2}
+  \label{fig:#1-left}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{\secondsf}
+  \figcap{#3}
+  \label{fig:#1-right}
+  \end{subfigure}
+  \figcap{#4}
+  \label{fig:#1}}
+\newcommand\threefigcaps[5]{
+  \begin{subfigure}[t]{\firstsf}
+  \figcap{#2}
+  \label{fig:#1-left}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{\secondsf}
+  \figcap{#3}
+  \label{fig:#1-middle}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{\thirdsf}
+  \figcap{#4}
+  \label{fig:#1-right}
+  \end{subfigure}
+  \figcap{#5}
+  \label{fig:#1}}
+
+\input{tex/abstract}
+
+\begin{document}
+
+\raggedbottom
+
+\maketitle
+
+\newcommand\sctn[2]{
+  \section{#1}
+  \label{sec:#2}
+  \input{tex/#2}}
+\sctn{Introduction}{soap26-introduction}
+\sctn{Background}{soap26-background}
+\sctn{Optimization Pipeline}{soap26-pipeline}
+\sctn{Results}{soap26-results}
+\sctn{Related Work}{soap26-related}
+\sctn{Limitations}{soap26-limitations}
+\sctn{Discussion}{soap26-discussion}
+\sctn{Conclusion}{soap26-conclusion}
+% \sctn{Acknowledgement}{acknowledgement}
+
+\hbadness=10000
+\bibliographystyle{./plainnat-ext}
+\bibliography{bibliography/main}
+
+\end{document}

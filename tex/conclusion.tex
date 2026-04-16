@@ -1,0 +1,7 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+Stream unrolling is a powerful but intrusive technique; in modern JVMs, stream fusion via \ff{mapMulti} may provide comparable benefits with less intrusion.
+Our method differs from existing approaches by introducing a formal calculus for bytecode semantics: we map bytecode to well-defined structures, apply algebraic rewriting rules, and regenerate optimized bytecode.
+Compared to \streamliner{}~\citep{moller2020eliminating} on Zulu JVM~23, two benchmarks took twice as long after their optimization while ours caused no degradation, two benchmarks gained equal performance from both methods, and two benchmarks using \ff{count} and \ff{allMatch} could only be optimized by \streamliner{} as these operations are outside our scope.
+We validated correctness on 31,799 Apache Kafka unit tests without disruption.

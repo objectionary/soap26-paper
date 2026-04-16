@@ -1,0 +1,84 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+The Stream API\footnote{\url{https://openjdk.org/projects/jdk8/}} introduced in Java~8 makes stream processing more expressive~\citep{kiselyov2017}.
+However, it relies heavily on virtual calls to temporary objects.
+Consequently, streams may work slower than procedural imperative loops~\citep{khatchadourian2020study}.
+
+Stream fusion may help by reducing stream operations and virtual calls~\citep{hirzel2014catalog}.
+Consider the following Java stream pipeline:
+\begin{ffcode}
+var NN = new int[] {1, 1, 2, 3, 5, 8, 13};
+var s = IntStream.of(NN) (*@\label{ln:stream-start}@*)
+  .map(x -> (*@\highlight{x * x}@*))
+  .map(x -> (*@\highlight{x + 1}@*))
+  .sum(); (*@\label{ln:stream-end}@*)
+\end{ffcode}
+It can be optimized by joining two \ff{map} operations into one:
+\begin{ffcode}
+var s = IntStream.of(NN).map(
+  x -> (*@\highlight{x * x + 1}@*)).sum();
+\end{ffcode}
+It can be further unrolled into an imperative loop:
+\begin{ffcode}
+var s = 0;
+for (var i = 0; i < NN.length; i++)
+  s += NN[i] * NN[i] + 1;
+\end{ffcode}
+
+The first ahead-of-time (AOT) bytecode-to-bytecode optimizer called \streamliner{} was introduced by \citet{moller2020eliminating}.
+It \emph{unrolls} some stream pipelines by transforming them into loops, thus eliminating virtual calls.
+However, this approach has limitations.
+For example, objects may not escape from lambda expressions.
+Additionally, streams may not be assigned to variables or passed as method arguments.
+Moreover, \streamliner{} increased performance in older JVMs, but we couldn't reproduce similar results in JVMs newer than 17.
+Our experiments showed that \streamliner{} may \emph{reduce} performance of short pipelines in recent JVM versions.
+
+In Java~16, the Stream API was extended with the \ff{mapMulti} method, which works similarly to \ff{flatMap} but is an order of magnitude faster.
+We implemented stream \emph{fusion} by combining pairs of \ff{map} and \ff{filter} operations into a single \ff{mapMulti} operation.
+We don't replace streams with loops but merge multiple stream operations into a single one.
+The snippet at the lines \ref{ln:stream-start}--\ref{ln:stream-end} would look like this, after our optimization:
+
+\begin{ffcode}
+var s = IntStream.of(NN).mapMulti(
+  (x, c) -> { (*@\highlight{c.accept(x * x + 1)}@*); }
+).sum();
+\end{ffcode}
+
+Instead of direct bytecode manipulation, our optimization pipeline is implemented as a rewriting system.
+We disassemble bytecode to \phic{} expressions~\citep{bugayenko2021eolang}, rewrite them, and assemble into bytecode.
+The usage of \phic{} enabled bytecode manipulation through declarative pattern matching and rewriting.
+
+We released \hone{} to Maven Central, an open source Maven plugin that implements our method%
+  \footnote{\anon[URL anonymized]{\url{https://github.com/objectionary/hone-maven-plugin}}}.
+Any Java project may optimize its bytecode after compilation by adding our plugin to their Maven or Gradle build configuration.
+The plugin requires no modifications to source code.
+
+We asked the following research questions:
+\requ{1}: Can replacing sequences of \ff{map} and \ff{filter} operations with a single \ff{mapMulti} operation provide performance gains similar to stream unrolling?
+\requ{2}: Can stream fusion via \ff{mapMulti} be applied safely, not disrupting the functionality of existing stream pipelines?
+
+Our results were as follows:
+On two of nine benchmarks used by \citet{moller2020eliminating}, our optimization outperformed \streamliner{}.
+On five benchmarks, our optimization matched \streamliner{}.
+Our method didn't optimize two benchmarks because they use terminal stream operations that our method is not intended to optimize.
+Optimization of Apache Kafka bytecode didn't cause any of its 31,799 unit tests in 1,511 test suites to fail.
+
+Based on the results, we can provide the following answers to our RQs:
+First, stream fusion via \ff{mapMulti} can provide performance gains comparable to or better than stream unrolling.
+Second, our optimization has fewer applicability limitations in production Java systems compared with \streamliner{}.
+
+In summary, the contributions of this paper are:
+\begin{inparaenum}[1)]
+  \item We propose a formal intermediate representation for Java bytecode based on \phic{}, enabling systematic stream fusion via rewrite rules and bridging low-level bytecode with high-level algebraic optimization;
+  \item We present \jeo{} v\input{_env/jeo-version.tex}, a Maven plugin for bidirectional mapping between Java bytecode and \phic{} expressions%
+      \footnote{\anon[URL anonymized]{\url{https://github.com/objectionary/jeo-maven-plugin}}};
+    a rewriting system with 44 rules that replaces \ff{map} and \ff{filter} operations with \ff{mapMulti} operations;
+    \phino{} v\input{_env/phino-version.tex}, a tool that applies rewriting rules to \phic{} expressions%
+      \footnote{\anon[URL anonymized]{\url{https://github.com/objectionary/phino}}};
+    and \hone{} v\input{_env/hone-version.tex}, a Maven plugin that automatically optimizes bytecode \ff{.class} files after compilation;
+  \item We report an experimental evaluation showing that our method of stream fusion
+    may be more effective on some benchmarks than \streamliner{}, especially on modern JVMs.
+  \item We demonstrate by experiment that our method doesn't disrupt
+    the functionality of 31,799 unit tests in Apache Kafka.
+\end{inparaenum}

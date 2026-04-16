@@ -1,0 +1,105 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+Java 8 introduced lambda expressions and streams in 2014.
+Streams make code more expressive compared to traditional imperative loops~\citep{khatchadourian2020study}.
+Although they resemble functions from functional programming, they are objects, not functions.
+The Stream API consists of regular Java classes, while the lambda expressions passed to stream operations are compiled to \ff{invokedynamic} instructions and corresponding static methods.
+At runtime, when the JVM encounters an \ff{invokedynamic} instruction, it creates an instance of a class that implements the target functional interface.
+All calls to the lambda expression then become virtual calls to that created instance.
+
+Streams in Java can be slow due to their abstraction overhead~\citep{kiselyov2017,khatchadourian2020study}.
+Each \ff{map} and \ff{filter} operation creates a new stream with its own infrastructure.
+For a simple sum of five squares, the stream pipeline invokes the lambda function five times, plus additional overhead from stream machinery:
+\begin{ffcode}
+var NN = {1, 2, 3, 4, 5};
+var s = IntStream.of(NN).map((*@\highlight{x -> x * x}@*)).sum();
+\end{ffcode}
+This algorithm can be rewritten as an imperative loop that doesn't use virtual calls:
+\begin{ffcode}
+var s = 0;
+for (var i = 0; i < NN.length; i++)
+  s += NN[i] * NN[i];
+\end{ffcode}
+
+Performance advantages of the imperative solution were obvious in earlier JVMs.
+However, modern JVMs are different.
+
+\begin{figure*}
+\settwocapwidths{0.45}
+\begin{subfigure}[t]{\firstsf}
+\begin{ffcode}
+public long loop() {
+  long sum = 0L;
+  (*@\highlight{for}@*) (int i=0; i<NN.length; ++i)
+    if (NN[i] % 2 == 0)
+      sum += NN[i] * NN[i];
+  return sum; }
+\end{ffcode}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{\secondsf}
+\begin{ffcode}
+public long map() {
+  return IntStream.of(NN)
+    .(*@\highlight{filter}@*)(x -> x % 2 == 0)
+    .(*@\highlight{map}@*)(x -> x * x)
+    .(*@\highlight{sum}@*)(); }
+\end{ffcode}
+\end{subfigure}
+\twofigcaps
+  {moller}
+  {Imperative style.}
+  {Functional style, using a stream pipeline.}
+  {Two variants of computing sums of even squares suggested by \citet{moller2020eliminating} to demonstrate that the usage of the Stream API degrades performance.}
+\end{figure*}
+
+\begin{table}
+\setlength{\tabcolsep}{.3em}
+\figcap{%
+  The ``Ratio'' column shows stream time divided by loop time.
+  It compares \cref{fig:moller-left} with \cref{fig:moller-right} for each JVM version.
+  The numbers demonstrate that the performance of streams was improved since earlier JVM versions.}
+\intabular{moller-jvms}
+\end{table}
+
+Modern JVMs handle streams better than their earlier versions.
+We reproduced the experiment of \citet{moller2020eliminating}.
+\Cref{fig:moller} shows two code snippets they tested with Java~13 using the OpenJDK Server~VM (build 13+33).
+They observed a ``60\% performance degradation'' for the stream approach (\cref{fig:moller-right}) compared to the loop (\cref{fig:moller-left}).
+\cref{tab:moller-jvms} shows the data we collected: the degradation is present only in versions older than Java~11.
+Moreover, some of the latest JVMs calculate the sum of even numbers faster when using a stream of integers.
+
+In this and all other experiments, we used JMH\footnote{\url{https://github.com/openjdk/jmh}} with
+  \input{_env/warmups.tex} warming-up and \input{_env/iterations.tex} measuring iterations.
+We used
+  a bare metal
+  \input{_env/os.tex}
+  at
+  \input{_env/ghz.tex}~GHz
+  \input{_env/arch.tex}
+  machine
+  with \input{_env/cores.tex}~cores
+  and \input{_env/ram.tex}~GiB of memory.
+The maximum measurement error observed in all experiments was \input{_env/mistake.tex}\%.
+The size of the \ff{NN} array was \input{_env/numbers.tex} million.
+The relative standard deviation (RSD), here and in all other tables in the paper, is a measure of relative variability.
+We performed all experiments \input{_env/repeat.tex} times and calculated RSD from the standard deviation and mean.
+In all our measurement experiments we used JVMs installable via SdkMan\footnote{\url{https://sdkman.io/}}.
+
+Under the hood, modern HotSpot JVMs have dramatically improved their JIT compilers and runtime machinery compared to the Java~8 era.
+
+First, their inlining is more aggressive.
+In Java~8, the C2 compiler's default MaxInlineLevel was 9, limiting nested call inlining.
+By JDK~11, the inlining budget and heuristics were refined.
+They better handle functional patterns.
+Small lambdas and short stream pipeline operations are inlined and optimized into efficient loops.
+
+Second, they improved escape analysis and scalar replacement.
+Intermediate objects created by the Stream API can now be optimized away.
+If the JIT proves that they never escape the method boundary, it eliminates the allocation entirely through scalar replacement.
+This transforms what used to be dozens of fleeting allocations and GC events into pure register operations.
+
+By contrast, a manually written loop often presents less uniform control flow.
+It hides opportunities for scalar replacement and may not be profiled as comprehensively by the compiler.
+Short pipelines---once vilified for their ``object churn''---now run as fast as or faster than equivalent for-loops.

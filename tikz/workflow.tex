@@ -1,0 +1,39 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+\begin{tikzpicture}
+[node distance=1.8em,
+every node/.style={draw, line width=.08em},
+every edge/.style={draw, -{Latex[length=1em, width=.8em]}, line width=.1em},
+tool/.style={draw=gray, label position=north west, fill=green!5, line width=.03em}]
+\node[fill=blue!5] (sys) {
+  \begin{tabular}{l>{\(\longrightarrow\)\;\arraybackslash}l}
+    \texttt{invokedynamic} & \(\Phi\).\texttt{map} \\
+    \texttt{invokedynamic} & \(\Phi\).\texttt{filter} \\
+    \(\Phi\).\texttt{map} & \(\Phi\).\texttt{distill} \\
+    \(\Phi\).\texttt{filter} & \(\Phi\).\texttt{distill} \\
+    \highlight{\(\Phi\).\texttt{distill} + \(\Phi\).\texttt{distill}} & \highlight{\(\Phi\).\texttt{distill}} \\
+    \(\Phi\).\texttt{distill} & \(\Phi\).\texttt{mapMulti} \\
+    \(\Phi\).\texttt{mapMulti} & \texttt{invokedynamic} \\
+    \(\Phi\).\texttt{map} & \texttt{invokedynamic} \\
+    \(\Phi\).\texttt{filter} & \texttt{invokedynamic} \\
+  \end{tabular}
+};
+\node[above=1.2 of sys] (phi1) {\parbox{7em}{\centering Original \(\varphi\)-expressions in \texttt{.phi} files}};
+\node[below right=1.6 and -.5 of sys.south] (phi2) {\parbox{7em}{\centering Rewritten \(\varphi\)-expressions in \texttt{.phi} files}};
+\begin{scope}[on background layer]
+    \path (phi1) edge node[tool, very near end] {\phino} (phi2);
+\end{scope}
+\node[left=1.8 of phi1] (xmir1) {\parbox{5em}{\centering Original XMIR in \texttt{.xmir} files}};
+\node[left=1.8 of xmir1] (bc1) {\parbox{6em}{\centering Original bytecode in \texttt{.class} files}};
+\node[below=1.6 of bc1] (java) {\parbox{5em}{\centering Java source code in \texttt{.java} files}};
+\path (java) edge node[tool] {\tool{javac}} (bc1);
+\path (bc1) edge[bend right=45] node[tool] (jeo1) {\jeo} (xmir1);
+\path (xmir1) edge[bend right=45] node[tool] (phino1) {\phino} (phi1);
+\node[left=1.8 of phi2] (xmir2) {\parbox{5em}{\centering Optimized XMIR in \texttt{.xmir} files}};
+\node[left=2 of xmir2] (bc2) {\parbox{6em}{\centering Optimized bytecode in \texttt{.class} files}};
+\path (phi2) edge[bend right=45] node[tool] (phino2) {\phino} (xmir2);
+\path (xmir2) edge[bend right=45] node[tool] (jeo2) {\jeo} (bc2);
+\node [dashed, fit=(sys) (phino1) (phino2) (jeo1) (jeo2)] (hone) {};
+\node [fill=red!5, anchor=north east, draw=none] at (hone.north east) {\hone{}};
+\end{tikzpicture}

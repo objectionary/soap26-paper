@@ -1,0 +1,13 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+We found no conclusive evidence of performance gain from optimizing Apache Kafka: total test duration before and after optimization differed by less than 1\% across ten runs lasting over two hours each, with individual test times fluctuating up to five times---consistent with \citet{georges2007statistically} on measurement noise in benchmarking.
+In such a mature project (900,000+ lines, 20,000+ pull requests, 1,000+ contributors), developers likely avoid the Stream API in performance-criti\-cal paths, knowing that pipelines are generally slower than imperative loops.
+
+Stream pipelines improve expressiveness and readability, which correlates with higher maintainability and fewer defects---yet these advantages are often sacrificed for performance.
+As Apache Cassandra developers noted: ``we quickly realized that Streams and Lambdas were pretty bad from a performance point of view; due to this fact, we stopped using them in hot path''~\cite{mazinanian2017understanding}.
+Compile-time optimizations like \hone{} or \streamliner{} may reconcile this trade-off, enabling programmers to adopt streams more widely while retaining acceptable performance.
+
+While bytecode modifications could be done without an IR (e.g., \streamliner{} uses ASM directly), \phic{} enabled us to express transformations declaratively through rewriting rules, eliminating control-flow boilerplate and reducing inconsistent edits.
+Its uniform, formally defined structure for all bytecode entities made the pipeline easier to reason about and extend---new optimizations require only new rules, not changes to the rewriting engine.
+This shift from imperative engineering to a declarative, rule-based system simplified implementation and improved correctness reasoning.
