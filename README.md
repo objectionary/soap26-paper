@@ -1,7 +1,6 @@
 # Java Stream Fusion via 𝜑-Calculus (LaTeX Paper)
 
-[![latexmk](https://github.com/objectionary/stream-fusion-using-phi/actions/workflows/make.yml/badge.svg)](https://github.com/objectionary/stream-fusion-using-phi/actions/workflows/make.yml)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/objectionary/hone-paper/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/objectionary/soap26-paper/blob/master/LICENSE.txt)
 
 This repository contains the experimental artifacts
   and the research paper in LaTeX.
@@ -26,13 +25,11 @@ The study uses the following open source tools:
 * [jeo-maven-plugin] to convert bytecode to [φ-calculus] and backward
 * [JMH] to benchmark
 
-Auto-generated PDF is here: [paper.pdf] (built by the [CI workflow]).
-
 In order to reproduce the experiments and then compile the paper,
   you need to run:
 
 ```bash
-git clone --recurse-submodules https://github.com/objectionary/hone-paper.git
+git clone --recurse-submodules https://github.com/objectionary/soap26-paper.git
 make REPEAT=2 NUMBERS=15
 ```
 
@@ -105,10 +102,7 @@ that run benchmarks and collect their results, producing TeX tables.
 * `tikz/` contains TikZ diagrams for the paper.
 * `streamliner/` contains [Streamliner] source code, without tests and
 some other files irrelevant to this experiment.
-* `eloquence/` contains scripts for grammar checking of the LaTeX paper.
-* `bibliography/` contains `main.bib` in BibTeX format.
 
-[paper.pdf]: https://github.com/objectionary/hone-paper/blob/gh-pages/paper.pdf
 [Poppler]: https://poppler.freedesktop.org/
 [SdkMan]: https://sdkman.io/
 [Vale]: https://vale.sh/docs/install
@@ -122,7 +116,7 @@ some other files irrelevant to this experiment.
 [Java Stream API]: https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html
 [Biboudis et al.]: https://arxiv.org/abs/1406.6631
 [Møller et al.]: https://dl.acm.org/doi/abs/10.1145/3428236
-[CI workflow]: https://github.com/objectionary/hone-paper/actions/workflows/make.yml
+[CI workflow]: https://github.com/objectionary/soap26-paper/actions/workflows/make.yml
 [hone-maven-plugin]: https://github.com/objectionary/hone-maven-plugin
 [jeo-maven-plugin]: https://github.com/objectionary/jeo-maven-plugin
 [Phino]: https://github.com/objectionary/phino

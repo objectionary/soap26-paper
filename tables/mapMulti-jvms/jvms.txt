@@ -1,0 +1,6 @@
+Zulu zulu 17.0.16 24.0.2
+GraalVM graal 17.0.12 26.ea.6
+Microsoft ms 17.0.16 21.0.8
+Oracle oracle 17.0.12 24.0.2
+Temurin tem 17.0.16 24.0.2
+Tencent kona 17.0.16 21.0.7

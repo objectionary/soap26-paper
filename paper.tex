@@ -3,7 +3,7 @@
 
 \PassOptionsToPackage{english}{babel}
 \PassOptionsToPackage{svgnames}{xcolor}
-\documentclass[sigplan,screen,nonacm,anonymous]{acmart}
+\documentclass[sigplan,screen]{acmart}
 \makeatletter\let\@authorsaddresses\@empty\makeatother
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -46,18 +46,18 @@
 \date{\today}
 
 \author{Yegor Bugayenko}
-% \orcid{0000-0001-6370-0678}
-\email{yegor256@gmail.com}
+\orcid{0000-0001-6370-0678}
+\email{yegor256@huawei.com}
 \affiliation{Huawei\city{Shenzhen}\country{China}}
 %
 \author{Maxim Trunnikov}
-% \orcid{0000-0001-8545-4797}
-\email{mtrunnikov@gmail.com}
+\orcid{0000-0001-8545-4797}
+\email{trunnikov.maxim@huawei.com}
 \affiliation{Huawei\city{Shenzhen}\country{China}}
 %
 \author{Vladimir Zakharov}
-% \orcid{0009-0007-2420-5675}
-\email{volodya.lombrozo@gmail.com}
+\orcid{0009-0007-2420-5675}
+\email{vladimir.zakharov@huawei.com}
 \affiliation{Huawei\city{Shenzhen}\country{China}}
 
 \ccsdesc[100]{Object-Oriented Programming}
@@ -65,7 +65,7 @@
 
 \def\trans{\mathrel{\leadsto}}
 \newcommand\figcap[1]{%
-  % \Description{#1}%
+  \Description{#1}%
   \caption{#1}%
 }
 \newcommand\pragma[1]{\texttt{\texorpdfstring{\(\Phi\)}{Q}.#1}}
@@ -150,18 +150,18 @@
   \section{#1}
   \label{sec:#2}
   \input{tex/#2}}
-\sctn{Introduction}{soap26-introduction}
-\sctn{Background}{soap26-background}
-\sctn{Optimization Pipeline}{soap26-pipeline}
-\sctn{Results}{soap26-results}
-\sctn{Related Work}{soap26-related}
-\sctn{Limitations}{soap26-limitations}
-\sctn{Discussion}{soap26-discussion}
-\sctn{Conclusion}{soap26-conclusion}
-% \sctn{Acknowledgement}{acknowledgement}
+\sctn{Introduction}{introduction}
+\sctn{Background}{background}
+\sctn{Optimization Pipeline}{pipeline}
+\sctn{Results}{results}
+\sctn{Related Work}{related}
+\sctn{Limitations}{limitations}
+\sctn{Discussion}{discussion}
+\sctn{Conclusion}{conclusion}
+\sctn{Acknowledgement}{acknowledgement}
 
 \hbadness=10000
 \bibliographystyle{./plainnat-ext}
-\bibliography{bibliography/main}
+\bibliography{main}
 
 \end{document}

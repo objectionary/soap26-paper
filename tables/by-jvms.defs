@@ -1,0 +1,61 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 Objectionary.com
+# SPDX-License-Identifier: MIT
+
+SHELL := $(shell env bash -c 'command -v bash')
+
+.ONESHELL:
+.SHELLFLAGS := -e -o pipefail -c
+.PHONY: all clean test
+.SECONDARY:
+.PRECIOUS:
+
+RUNS=01
+VENDORS=1
+NUMBERS=1
+ITERATIONS=1
+WARMUPS=1
+DUP_VENDORS=false
+PRINTF := $(shell which gprintf 2>/dev/null || echo printf)
+FIND := $(shell which gfind 2>/dev/null || echo find)
+GREP := $(shell which ggrep 2>/dev/null || echo grep)
+SED := $(shell which gsed 2>/dev/null || echo sed)
+
+JAVAS := $(wildcard *.java)
+
+JVMS=$(shell cut -f2 -d' ' jvms.txt | head -$(VENDORS))
+BEFORE=$(foreach run,$(RUNS),$(foreach jvm,$(JVMS),before/$(run)+$(jvm).csv))
+AFTER=$(foreach run,$(RUNS),$(foreach jvm,$(JVMS),after/$(run)+$(jvm).csv))
+RESULTS=$(BEFORE) $(AFTER)
+DIFFS=$(foreach run,$(RUNS),$(foreach jvm,$(JVMS),diffs/$(run)+$(jvm).csv))
+ADIFFS=$(foreach jvm,$(JVMS),adiffs/$(jvm).csv)
+
+export NUMBERS VENDORS DUP_VENDORS GREP PRINTF FIND SED
+
+all: table.tex
+
+.SILENT:
+table.tex: $(ADIFFS) ../by-jvms.defs ../make-table.sh
+	../make-table.sh "$@" >>../../log.txt 2>&1
+	n=$$(basename "$@")
+	n=$${n%.*}
+	COMPACT=1 ../make-table.sh "$${n}-compact.tex" >>../../log.txt 2>&1
+	cat $@
+
+.SILENT:
+adiffs/%.csv: $(DIFFS) ../by-jvms.defs ../make-adiff.sh
+	../make-adiff.sh $@ >>../../log.txt 2>&1
+	echo "Assembled $@"
+
+.SILENT:
+diffs/%.csv: before/%.csv after/%.csv ../by-jvms.defs ../make-diff.sh
+	../make-diff.sh $@ >>../../log.txt 2>&1
+	echo "Assembled $@"
+
+.SILENT:
+$(RESULTS): $(JAVAS) jvms.txt ../make-result.sh
+	../make-result.sh $@ >>../../log.txt 2>&1
+	echo "Generated $@ with numbers=$(NUMBERS), iterations=$(ITERATIONS), warmups=$(WARMUPS)"
+
+.SILENT:
+clean:
+	git clean -fdX

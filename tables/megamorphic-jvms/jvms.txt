@@ -1,0 +1,4 @@
+Zulu zulu 8.0.462 24.0.2
+Corretto amzn 8.0.442 24.0.2
+Liberica librca 8.0.442 24.fx
+Tencent kona 8.0.432 21.0.7

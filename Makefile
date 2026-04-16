@@ -15,8 +15,6 @@ SHELL := $(shell env bash -c 'command -v bash')
 
 # Local override for $(PRINTF)
 # Then use $(PRINTF) instead of $(PRINTF).
-# More info right here:
-# https://github.com/objectionary/hone-paper/issues/59
 PRINTF := $(shell which gprintf 2>/dev/null || echo printf)
 # Local override for GNU find on macOS
 FIND := $(shell which gfind 2>/dev/null || echo find)
@@ -66,28 +64,6 @@ ultimate:
 	$(MAKE) paper.pdf soap26.pdf NUMBERS=100 VENDORS=10 ITERATIONS=10 WARMUPS=10 REPEAT=10
 	sec=$$(perl -E "say int($$(date '+%s.%N') - $${start})")
 	$(PRINTF) '🍒 The ultimate set of experiments was done in %ds\n' "$${sec}"
-
-docker: env .image.txt
-	img=$$(cat $<)
-	docker run --platform linux/x86_64 --rm -v $$(pwd):/hn "$${img}" make paper.pdf REPEAT=$(REPEAT) NUMBERS=$(NUMBERS) VENDORS=$(VENDORS) ITERATIONS=$(ITERATIONS) WARMUPS=$(WARMUPS)
-
-Dockerfile: docker/generate-dockerfile.sh docker/Dockerfile.template
-	./docker/generate-dockerfile.sh $@
-
-.image.txt: Dockerfile
-	docker pull --platform=linux/x86_64 yegor256/hone-paper || echo 'Failed to pull Docker image'
-	opts=()
-	if [ "$$(uname)" == 'Darwin' ]; then
-		opts+=('--platform=linux/x86_64')
-	fi
-	docker build --progress=plain -t hone-paper "$${opts[@]}" --load "$$(pwd)"
-	docker build -t hone-paper "$${opts[@]}" -q "$$(pwd)" > "$@"
-	echo "Docker image is built: $$(cat $@)"
-
-push: .image.txt
-	img=$$(cat $<)
-	docker image tag "$${img}" yegor256/hone-paper
-	docker image push --platform=linux/x86_64 yegor256/hone-paper
 
 arXiv.zip: paper.pdf arXiv.sh
 	$(PRINTF) "\n👉🏻 Packaging %s...\n" "$@"
@@ -160,7 +136,7 @@ env:
 	echo "👌🏻 Your environment is good enough!"
 
 .SILENT:
-%.pdf: env paper.tex $(TEXS) $(TIKZ) $(TABLES) bibliography/main.bib _env/os.tex _env/cores.tex _env/ram.tex _env/ghz.tex _env/arch.tex _env/numbers.tex _env/repeat.tex _env/iterations.tex _env/warmups.tex _env/hone-version.tex _env/jeo-version.tex _env/phino-version.tex _env/mistake.tex
+%.pdf: env paper.tex $(TEXS) $(TIKZ) $(TABLES) main.bib _env/os.tex _env/cores.tex _env/ram.tex _env/ghz.tex _env/arch.tex _env/numbers.tex _env/repeat.tex _env/iterations.tex _env/warmups.tex _env/hone-version.tex _env/jeo-version.tex _env/phino-version.tex _env/mistake.tex
 	n=$$(basename "$@")
 	n=$${n%.*}
 	latexmk -pdf "$${n}" >>log.txt 2>&1

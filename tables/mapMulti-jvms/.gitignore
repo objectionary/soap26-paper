@@ -1,0 +1,8 @@
+*.iml
+after/
+before/
+dependency-reduced-pom.xml
+diffs/
+pom.xml
+table.tex
+target/
