@@ -1,4 +1,6 @@
 --ignore=You have requested document class
 --ignore=You have requested package
 --ignore=nobibliography
+--ignore=vspace should only be used
+--ignore=Some font shapes were not available
 --verbose
