@@ -10,10 +10,10 @@ zip=arXiv.zip
 rm -rf "${dir}"
 rm -rf "${zip}"
 
-files=(paper.tex bibliography/main.bib plainnat-ext.bst)
+files=(paper.tex main.bib plainnat-ext.bst)
 while IFS= read -r f; do
     files+=( "${f}" )
-done < <(find tables/ \( -name 'table.tex' -o -name 'seconds.tex' \) -type f)
+done < <(find tables/ \( -name 'table.tex' -o -name 'table-compact.tex' -o -name 'seconds.tex' \) -type f)
 for d in tex tikz _env; do
     while IFS= read -r f; do
         files+=( "${f}" )
@@ -40,7 +40,7 @@ pdflatex -interaction=nonstopmode -halt-on-error paper.tex
 pdflatex -interaction=nonstopmode -halt-on-error paper.tex
 
 rm -rf ./*.aux ./*.bcf ./*.blg ./*.fdb_latexmk ./*.fls ./*.log ./*.run.xml ./*.out ./*.exc ./*.vtc ./*.ret
-rm -rf bibliography
+rm -rf ./main.bib
 
 rm -f "${dir}.zip"
 zip -x paper.pdf -qr "../${zip}" . .*
