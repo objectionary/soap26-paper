@@ -42,26 +42,34 @@
 \renewcommand{\floatpagefraction}{0.9}
 \setcounter{topnumber}{3}
 
+\copyrightyear{2026}
+\acmYear{2026}
+\setcopyright{acmlicensed}
+\acmConference[SOAP '26]{The 15th ACM SIGPLAN International Workshop on the State Of the Art in Program Analysis}{June 15--19, 2026}{Boulder, CO, USA}
+\acmBooktitle{The 15th ACM SIGPLAN International Workshop on the State Of the Art in Program Analysis (SOAP '26), June 15--19, 2026, Boulder, CO, USA}
+\acmDOI{10.1145/nnnnnnn.nnnnnnn}
+\acmISBN{978-x-xxxx-xxxx-x/xx/xx}
+
 \title{Compile-Time Java Stream Fusion via \texttt{mapMulti}}
-\date{\today}
 
 \author{Yegor Bugayenko}
 \orcid{0000-0001-6370-0678}
 \email{yegor256@huawei.com}
-\affiliation{Huawei\city{Shenzhen}\country{China}}
+\affiliation{\institution{Huawei}\city{Shenzhen}\country{China}}
 %
 \author{Maxim Trunnikov}
 \orcid{0000-0001-8545-4797}
 \email{trunnikov.maxim@huawei.com}
-\affiliation{Huawei\city{Shenzhen}\country{China}}
+\affiliation{\institution{Huawei}\city{Shenzhen}\country{China}}
 %
 \author{Vladimir Zakharov}
 \orcid{0009-0007-2420-5675}
 \email{vladimir.zakharov@huawei.com}
-\affiliation{Huawei\city{Shenzhen}\country{China}}
+\affiliation{\institution{Huawei}\city{Shenzhen}\country{China}}
 
-\ccsdesc[100]{Object-Oriented Programming}
-\keywords{Java, Object-Oriented Programming}
+\ccsdesc[500]{Software and its engineering~Compilers}
+\ccsdesc[300]{Software and its engineering~Source code generation}
+\keywords{Java, Stream API, Stream Fusion, Program Optimization, Static Analysis}
 
 \def\trans{\mathrel{\leadsto}}
 \newcommand\figcap[1]{%
@@ -71,10 +79,10 @@
 \newcommand\pragma[1]{\texttt{\texorpdfstring{\(\Phi\)}{Q}.#1}}
 \newcommand\novale[2]{#2}
 \newcommand\highlight[1]{{\color{orange}\ifmmode\text{#1}\else#1\fi}}
-\newcommand\hone{\anon[T1]{\scshape Hone}}
+\newcommand\hone{\anon[T1]{{\scshape Hone}}}
 \newcommand\tool[1]{{\sffamily #1}}
 \newcommand\streamliner{{\scshape Streamliner}}
-\newcommand\jeo{\anon[T2]{\scshape Jeo}}
+\newcommand\jeo{\anon[T2]{{\scshape Jeo}}}
 \newcommand\phino{\anon[T3]{{\scshape Phino}}}
 \newcommand\requ[1]{\textbf{RQ#1}}
 \newcommand\intabular[1]{%
