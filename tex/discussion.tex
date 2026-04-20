@@ -9,5 +9,7 @@ As Apache Cassandra developers noted: ``we quickly realized that Streams and Lam
 Compile-time optimizations like \hone{} or \streamliner{} may reconcile this trade-off, enabling programmers to adopt streams more widely while retaining acceptable performance.
 
 While bytecode modifications could be done without an IR (e.g., \streamliner{} uses ASM directly), \phic{} enabled us to express transformations declaratively through rewriting rules, eliminating control-flow boilerplate and reducing inconsistent edits.
-Its uniform, formally defined structure for all bytecode entities made the pipeline easier to reason about and extend---new optimizations require only new rules, not changes to the rewriting engine.
+Its uniform, formally defined structure for all bytecode entities made the pipeline easier to reason about and extend---new optimizations require only new rewriting rules, written in the same surface syntax as the IR itself, without any modification to the rewriting engine or to \jeo{} and \phino{}.
 This shift from imperative engineering to a declarative, rule-based system simplified implementation and improved correctness reasoning.
+It is important to emphasize that \phic{}~\citep{bugayenko2021eolang} was not designed for this particular experiment: it is a generic formalism for object-oriented languages and is not tied to Java or to the JVM bytecode.
+Its expressions describe objects, attributes, and application in a language-agnostic way, and the mapping to Java bytecode performed by \jeo{} is only one possible front-end; rewriting rules operate on \phic{} expressions and are therefore reusable across any source language that can be translated into this IR.
