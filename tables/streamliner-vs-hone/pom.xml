@@ -69,7 +69,7 @@
             <configuration>
               <debug>false</debug>
               <rules>streams/*</rules>
-              <phinoVersion>${jeo.version}</phinoVersion>
+              <phinoVersion>${phino.version}</phinoVersion>
               <jeoVersion>${jeo.version}</jeoVersion>
               <alwaysWithDocker>true</alwaysWithDocker>
               <smallSteps>true</smallSteps>

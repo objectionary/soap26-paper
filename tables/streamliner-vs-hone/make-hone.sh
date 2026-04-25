@@ -24,6 +24,7 @@ mvn --update-snapshots --batch-mode --errors --fail-fast clean package \
     "-Djvm.version=$(echo "${v}" | cut -f1 -d'.')" \
     "-Dhone.version=${HONE_VERSION}" \
     "-Djeo.version=${JEO_VERSION}" \
+    "-Dphino.version=${PHINO_VERSION}" \
     "-Dnumbers=${NUMBERS}" "-Diterations=${ITERATIONS}" "-Dwarmups=${WARMUPS}"
 
 mkdir -p "$(dirname "${csv}")"

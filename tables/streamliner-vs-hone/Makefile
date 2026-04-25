@@ -19,9 +19,9 @@ FIND := $(shell which gfind 2>/dev/null || echo find)
 GREP := $(shell which ggrep 2>/dev/null || echo grep)
 SED := $(shell which gsed 2>/dev/null || echo sed)
 
-HONE_VERSION=0.20.3
-JEO_VERSION=0.14.15
-PHINO_VERSION=0.0.43
+HONE_VERSION=0.24.0
+JEO_VERSION=0.15.1
+PHINO_VERSION=0.0.0.67
 
 JVM := $(shell head -1 jvm.txt | xargs)
 JVM_SUFFIX := $(shell head -2 jvm.txt | tail -1 | xargs)
@@ -66,5 +66,4 @@ $(HONES): %: Makefile ./make-hone.sh pom.xml
 
 clean:
 	$(MAKE) -C "$${STREAMLINER_DIR}" clean
-	rm -f ./*.csv ./table.tex
-	rm -rf target/ benches/ hones/ outs/
+	git clean -fdX

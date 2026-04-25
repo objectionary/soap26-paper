@@ -27,9 +27,9 @@ TEXS := $(wildcard tex/*.tex)
 TIKZ := $(wildcard tikz/*.tex)
 SCRIPTS:= $(shell $(FIND) . -name '*.sh' -type f)
 
-HONE_VERSION=0.20.3
-JEO_VERSION=0.14.15
-PHINO_VERSION=0.0.45
+HONE_VERSION=0.24.0
+JEO_VERSION=0.15.1
+PHINO_VERSION=0.0.0.67
 
 # How many million items to keep in test arrays:
 NUMBERS=1
