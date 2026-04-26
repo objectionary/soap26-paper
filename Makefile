@@ -322,12 +322,7 @@ $(STAMP):
 
 .SILENT:
 clean:
-	rm -rf ./paper.pdf ./arXiv.zip ./zenodo.zip ./*.dvi ./*.xcp ./*.bbl ./*.blg ./*.out ./*.fls ./*.log ./*.fdb_latexmk ./*.aux ./*.ret ./*.svg ./_eolang ./svg-inkscape
-	rm -rf ./.stamp_*
-	rm -rf ./.eloquence
-	rm -rf ./.arXiv ./.zenodo
-	rm -rf ./_env
-	rm -f log.txt
+	git clean -fdX
 	for d in $(SUBDIRS); do
 		$(MAKE) -C "$${d}" clean
 	done
