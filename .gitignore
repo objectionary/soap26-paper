@@ -29,9 +29,13 @@ _eolang/
 _minted-main/
 _minted-slidedeck/
 adiffs/
+after/
 arXiv.zip
 arXiv/
+before/
+benches/
 dependency-reduced-pom.xml
+diffs/
 Dockerfile
 ebnf.svg
 Eo.svg

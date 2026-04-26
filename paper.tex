@@ -172,6 +172,27 @@
 \sctn{Acknowledgement}{acknowledgement}
 
 \hbadness=10000
+\makeatletter
+\global\@ACM@balancefalse
+\renewcommand\@BAdblcol{\if@firstcolumn
+       \unvbox\@outputbox \penalty\outputpenalty
+       \global\oldvsize=\@colht \global\multiply \@colht by 2
+       \global\@BAlanceonetrue
+       \global\@firstcolumnfalse
+  \else \global\@firstcolumntrue
+       \if@BAlanceone
+       \global\@BAlanceonefalse\@BAlancecol
+       \global\@colht=\oldvsize \fi
+     \setbox\@outputbox\vbox to \@colht{\hbox to\textwidth
+     {\hbox to\columnwidth {\box\@leftcolumn \hss}\hfil
+      \vrule width\columnseprule\hfil \hbox to\columnwidth
+      {\box\@outputbox \hss}}\vfil}\@combinedblfloats
+     \@outputpage \begingroup \@dblfloatplacement
+     \@startdblcolumn \@whilesw\if@fcolmade \fi
+     {\@outputpage\@startdblcolumn}\endgroup
+  \fi}
+\makeatother
+\balance
 \bibliographystyle{./plainnat-ext}
 \bibliography{main}
 
