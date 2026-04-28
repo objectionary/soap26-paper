@@ -1,6 +1,7 @@
 # Java Stream Fusion via 𝜑-Calculus (LaTeX Paper)
 
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/objectionary/soap26-paper/blob/master/LICENSE.txt)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19837769.svg)](https://doi.org/10.5281/zenodo.19837769)
 
 This repository contains the experimental artifacts
   and the research paper in LaTeX.
