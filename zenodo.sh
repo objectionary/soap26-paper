@@ -38,6 +38,8 @@ while IFS= read -r f; do
 done < <(${FIND} tables -name '*.csv' -o -name '*.out')
 log "The tables/ directory contains raw data collected by the JMH."
 
+PHINO_VERSION="${PHINO_VERSION/0.0.0/0.0}"
+
 products=(
     "objectionary/hone-maven-plugin:${HONE_VERSION}"
     "objectionary/jeo-maven-plugin:${JEO_VERSION}"
