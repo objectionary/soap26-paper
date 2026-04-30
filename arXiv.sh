@@ -10,7 +10,7 @@ zip=arXiv.zip
 rm -rf "${dir}"
 rm -rf "${zip}"
 
-files=(paper.tex main.bib plainnat-ext.bst)
+files=(paper.tex main.bib)
 while IFS= read -r f; do
     files+=( "${f}" )
 done < <(find tables/ \( -name 'table.tex' -o -name 'table-compact.tex' -o -name 'seconds.tex' \) -type f)
@@ -29,6 +29,7 @@ done
 sed -i '1s;^;\\def\\arXiv{}\n;' "${dir}/paper.tex"
 
 TLROOT=$(kpsewhich -var-value TEXMFDIST)
+cp "${TLROOT}/tex/latex/acmart/acmart.cls" "${dir}"
 for p in ffcode href-ul eolang iexec; do
     cp "${TLROOT}/tex/latex/${p}/${p}.sty" "${dir}"
 done
