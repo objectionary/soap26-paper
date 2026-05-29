@@ -1,10 +1,7 @@
 % SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
 % SPDX-License-Identifier: MIT
 
-The Stream API\footnote{\url{https://openjdk.org/projects/jdk8/}} introduced in Java~8 makes stream processing more expressive~\citep{kiselyov2017}.
-However, it relies heavily on virtual calls to temporary objects.
-Consequently, streams may work slower than procedural imperative loops~\citep{khatchadourian2020study}.
-
+The Stream API\footnote{\url{https://openjdk.org/projects/jdk8/}} introduced in Java~8 makes stream processing more expressive~\citep{kiselyov2017}, but its heavy reliance on virtual calls to temporary objects may make streams slower than imperative loops~\citep{khatchadourian2020study}.
 Stream fusion may help by reducing stream operations and virtual calls~\citep{hirzel2014catalog}.
 Consider the following Java stream pipeline:
 \begin{ffcode}
@@ -26,18 +23,14 @@ for (var i = 0; i < NN.length; i++)
   s += NN[i] * NN[i] + 1;
 \end{ffcode}
 
-The first ahead-of-time (AOT) bytecode-to-bytecode optimizer called \streamliner{} was introduced by \citet{moller2020eliminating}.
-It \emph{unrolls} some stream pipelines by transforming them into loops, thus eliminating virtual calls.
-However, this approach has limitations.
-For example, objects may not escape from lambda expressions.
-Additionally, streams may not be assigned to variables or passed as method arguments.
-Moreover, \streamliner{} increased performance in older JVMs, but we couldn't reproduce similar results in JVMs newer than 17.
-Our experiments showed that \streamliner{} may \emph{reduce} performance of short pipelines in recent JVM versions.
+\citet{moller2020eliminating} introduced \streamliner{}, the first ahead-of-time (AOT) bytecode-to-bytecode optimizer.
+It \emph{unrolls} some stream pipelines into loops, eliminating virtual calls.
+This approach has limitations, though: objects may not escape from lambda expressions, and streams may not be assigned to variables or passed as method arguments.
+Moreover, \streamliner{} increased performance in older JVMs, but we couldn't reproduce similar results in JVMs newer than 17; our experiments showed it may even \emph{reduce} performance of short pipelines in recent JVM versions.
 
-In Java~16, the Stream API was extended with the \ff{mapMulti} method, which works similarly to \ff{flatMap} but is an order of magnitude faster.
-We implemented stream \emph{fusion} by combining pairs of \ff{map} and \ff{filter} operations into a single \ff{mapMulti} operation.
-We don't replace streams with loops but merge multiple stream operations into a single one.
-The snippet at the lines \ref{ln:stream-start}--\ref{ln:stream-end} would look like this, after our optimization:
+Java~16 extended the Stream API with the \ff{mapMulti} method, which works similarly to \ff{flatMap} but is an order of magnitude faster.
+We implemented stream \emph{fusion} by combining pairs of \ff{map} and \ff{filter} operations into a single \ff{mapMulti} operation, merging multiple stream operations into one rather than replacing streams with loops.
+After our optimization, the snippet at lines \ref{ln:stream-start}--\ref{ln:stream-end} would look like this:
 
 \begin{ffcode}
 var s = IntStream.of(NN).mapMulti(
