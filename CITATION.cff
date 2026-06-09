@@ -1,0 +1,64 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+# SPDX-License-Identifier: MIT
+
+cff-version: 1.2.0
+message: "If you use this software or paper, please cite it using these metadata."
+title: "Compile-Time Java Stream Fusion via mapMulti"
+authors:
+  - given-names: Yegor
+    family-names: Bugayenko
+    email: yegor256@huawei.com
+    orcid: "https://orcid.org/0000-0001-6370-0678"
+    affiliation: "Huawei, Shenzhen, China; Innopolis University, Kazan, Russia"
+  - given-names: Maxim
+    family-names: Trunnikov
+    email: trunnikov.maxim@huawei.com
+    orcid: "https://orcid.org/0000-0001-8545-4797"
+    affiliation: "Huawei, Shenzhen, China"
+  - given-names: Vladimir
+    family-names: Zakharov
+    email: vladimir.zakharov@huawei.com
+    orcid: "https://orcid.org/0009-0007-2420-5675"
+    affiliation: "Huawei, Shenzhen, China"
+repository-code: "https://github.com/objectionary/soap26-paper"
+doi: "10.5281/zenodo.19837769"
+license: MIT
+keywords:
+  - Java
+  - Stream API
+  - Stream Fusion
+  - Program Optimization
+  - Static Analysis
+preferred-citation:
+  type: conference-paper
+  title: "Compile-Time Java Stream Fusion via mapMulti"
+  authors:
+    - given-names: Yegor
+      family-names: Bugayenko
+      email: yegor256@huawei.com
+      orcid: "https://orcid.org/0000-0001-6370-0678"
+      affiliation: "Huawei, Shenzhen, China; Innopolis University, Kazan, Russia"
+    - given-names: Maxim
+      family-names: Trunnikov
+      email: trunnikov.maxim@huawei.com
+      orcid: "https://orcid.org/0000-0001-8545-4797"
+      affiliation: "Huawei, Shenzhen, China"
+    - given-names: Vladimir
+      family-names: Zakharov
+      email: vladimir.zakharov@huawei.com
+      orcid: "https://orcid.org/0009-0007-2420-5675"
+      affiliation: "Huawei, Shenzhen, China"
+  collection-title: "Proceedings of the 15th ACM SIGPLAN International Workshop on the State Of the Art in Program Analysis (SOAP '26)"
+  conference:
+    name: "15th ACM SIGPLAN International Workshop on the State Of the Art in Program Analysis (SOAP '26)"
+    city: Boulder
+    region: Colorado
+    country: US
+    date-start: "2026-06-15"
+    date-end: "2026-06-19"
+  doi: "10.1145/3814987.3814988"
+  isbn: "979-8-4007-2709-2"
+  year: 2026
+  month: 6
+  publisher:
+    name: "Association for Computing Machinery"
