@@ -105,26 +105,13 @@
   \Description{#1}%
   \caption{#1}%
 }
-\newcommand\pragma[1]{\texttt{\texorpdfstring{\(\Phi\)}{Q}.#1}}
-\newcommand\novale[2]{#2}
-\newcommand\highlight[1]{{\color{orange}\ifmmode\text{#1}\else#1\fi}}
-\newcommand\hone{\anon[T1]{{\scshape Hone}}}
-\newcommand\tool[1]{{\sffamily #1}}
-\newcommand\streamliner{{\scshape Streamliner}}
-\newcommand\jeo{\anon[T2]{{\scshape Jeo}}}
-\newcommand\phino{\anon[T3]{{\scshape Phino}}}
+\input{snippets/macros.tex}
 \newcommand\requ[1]{\textbf{RQ#1}}
 \newcommand\intabular[1]{%
   \begin{center}%
   \input{tables/#1/table-compact.tex}%
   \label{tab:#1}%
   \end{center}}
-
-\makeatletter
-\newcommand\frg[2]{%
-  \def\param{#1}%
-  {\overbracket[0.4pt][1pt]{#2}^{{\ifx\param\empty\else\color{gray}\text{\sffamily#1}\fi}}}}
-\makeatother
 
 \lstset{backgroundcolor=\color{white},xleftmargin=2.5em}
 

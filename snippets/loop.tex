@@ -1,0 +1,11 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+\begin{ffcode}
+public long loop() {
+  long sum = 0L;
+  (*@\highlight{for}@*) (int i=0; i<NN.length; ++i)
+    if (NN[i] % 2 == 0)
+      sum += NN[i] * NN[i];
+  return sum; }
+\end{ffcode}

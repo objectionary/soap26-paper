@@ -1,47 +1,169 @@
 % SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
 % SPDX-License-Identifier: MIT
 
+\PassOptionsToPackage{svgnames}{xcolor}
 \documentclass{article}
-\usepackage[nominutes,template,scheme=dark]{/code/ctan/ppt-slides/ppt-slides}
+\usepackage[nominutes,template,scheme=light]{ppt-slides}
 \usepackage{clicks}
 \usepackage{multicol}
 \usepackage{/code/talks/lecture-notes/notes}
-\usepackage{svg}
+\usepackage{booktabs}
+\usepackage{mathtools}
+\usepackage{tabularx}
+\usepackage{eolang}
 \usepackage{tikz}
+  \usetikzlibrary{arrows.meta}
+  \usetikzlibrary{backgrounds}
+  \usetikzlibrary{calc}
+  \usetikzlibrary{fit}
 
-\definecolor{myblack}{HTML}{000000}
-\definecolor{myred}{HTML}{ED474A}
+\renewcommand\emph[1]{\textcolor{orange}{#1}}
 
-\renewcommand\emph[1]{\textcolor{myred}{#1}}
+\newcommand\anon[2][]{#2}
+\input{../snippets/macros.tex}
 
-\newcommand*{\thetitle}{Compile-Time Java Stream Fusion via \ff{mapMulti}}
-\newcommand*{\theauthor}{Yegor Bugayenko}
+\newcommand*{\thetitle}{map + filter \(\to\) mapMulti}
+\newcommand*{\thesubtitle}{Compile-Time Java Stream Fusion}
+\newcommand*{\theauthor}{\ul{Yegor Bugayenko}, Maxim Trunnikov, and Vladimir Zakharov}
 
 \begin{document}
 
-\pagecolor{myblack}
-
-\pptLeft{June 2026}
+\pptLeft{SOAP'26 @ PLDI}
 \pptRight{@yegor256}
 
 % Slide 1: Title --- paper title, authors (Huawei + Innopolis), SOAP'26 @ PLDI, Boulder
+\plush{
+  \begin{pptMiddle}
+    \pptTitle{\thetitle}{\thesubtitle}
+    {\large\theauthor{}}\par
+    Huawei, China\par
+    \vspace*{2em}
+    15th ACM SIGPLAN International Workshop on the State Of the Art in Program Analysis
+    / Boulder, CO, USA, June 2026
+  \end{pptMiddle}
+}
+\newpage
 
-% Slide 2: Motivation --- Java streams are expressive but slow: map().map().sum() example, intermediate objects and virtual calls are the cost
+\plush{
+  \pptBanner{Streams Are Expressive, but Believed to Be Slow}
+  \begin{multicols}{2}
+  {\small\input{../snippets/loop.tex}}
+  \par\columnbreak\par
+  {\small\input{../snippets/stream.tex}}
+  \end{multicols}
+  \par
+  Every \ff{map()} and \ff{filter()} creates a new stream object;
+    every lambda call is a \emph{virtual call} via \ff{invokedynamic}.
+  }
 
-% Slide 3: Prior art --- Streamliner (Møller & Veileborg, 2020) unrolls streams into imperative loops; limitations: escaping lambdas, streams as variables/arguments, and it may even slow code down on JVMs newer than 17
+\plush{
+  \pptBanner{Apache Cassandra developers:}
+  \enquote{We quickly realized that Streams and Lambdas were pretty bad
+    from a performance point of view; due to this fact,
+    we \emph{stopped using them in hot path}~\citep{mazinanian2017understanding}.}}
 
-% Slide 4: Our idea --- fuse consecutive map()/filter() into a single mapMulti() (Java 16): before/after code of the same pipeline, one virtual call instead of many
+\plush{
+  \pptBanner{Prior Art: \streamliner{} Unrolls Streams into Loops}
+  \par
+  \citet{moller2020eliminating} observed a \emph{60\% slowdown}
+  of the stream version on Java~13.
+  \par
+  The first AOT bytecode-to-bytecode stream
+    optimizer~\citep{moller2020eliminating}; however,
+    objects may not escape lambdas, and streams may not be
+    assigned to variables or passed as arguments.}
 
-% Slide 5: Toolchain --- bytecode is disassembled into phi-expressions (Jeo), rewritten by 44 rules (Phino), assembled back to bytecode (Hone Maven plugin); no source code changes
+\plush{
+  \pptBanner{Modern JVMs Are Smart}
+  Modern JVMs already run streams well
+    (ratio is stream time over loop time):
+  \par
+  \begin{minipage}{0.9\linewidth}\scriptsize
+  \input{../tables/moller-jvms/table-compact.tex}
+  \end{minipage}
+  \par
+  The 60\% degradation exists only in JVMs \emph{older than Java~11};
+    unrolling may even slow short pipelines down.}
 
-% Slide 6: Phi-calculus at work --- the same Java snippet as bytecode and as a phi-expression, plus one example rewrite rule (pattern -> replacement)
+\plick{
+  \pptBanner{Idea: Fuse the Pipeline into a Single \ff{mapMulti()}}
+  {\renewcommand\label[1]{}
+  \input{../snippets/before.tex}}}
+\plush{Fuse into \ff{mapMulti()} --- Java~16+, may be faster?:
+  \input{../snippets/fused.tex}}
 
-% Slide 7: RQ1 (performance) --- benchmark table vs Streamliner on two Zulu JVMs: up to 5x speedup, comparable on most, and never a degradation (unlike Streamliner on filterCount/filterMapCount)
+\plick{
+  \pptBanner{Research Questions:}}
+\plick{
+  RQ1: Can replacing sequences of \ff{map} and \ff{filter} operations with a single \ff{mapMulti} operation provide performance gains similar to stream unrolling?}
+\plush{
+  RQ2: Can stream fusion via \ff{mapMulti} be applied safely, not disrupting the functionality of existing stream pipelines?}
 
-% Slide 8: RQ2 (safety) --- Hone applied to Apache Kafka 4.0.0: 15k .class files optimized, all 31,799 unit tests pass; also 50+ releases of Hone optimized by itself
+\plush{
+  \pptBanner{\hone{}: the Optimization Pipeline}
+  \par
+  \resizebox{!}{0.75\textheight}{\input{../tikz/workflow.tex}}
+  }
 
-% Slide 9: Limitations --- terminal operations (allMatch, count) are not fused, build time grows (120 -> 165 min on Kafka), only map/filter pairs so far
+\plush{
+  \pptBanner{Bytecode as \(\varphi\)-Expressions}
+  {\scriptsize
+  \begin{multicols}{3}
+  \input{../snippets/java.tex}
+  \par\columnbreak\par
+  \input{../snippets/bytecode.tex}
+  \par\columnbreak\par
+  \input{../snippets/phi.tex}
+  \end{multicols}}}
 
-% Slide 10: Takeaways --- fusion via mapMulti is as fast as unrolling but safer and simpler; links: hone-maven-plugin on GitHub, Zenodo artifacts, QR code
+\plush{
+  \pptBanner{Fusion, Rule by Rule (44 Rules in Total)}
+  Transformations are \emph{declarative rewriting rules},
+    applied repeatedly until none match, for example:
+  \input{../snippets/rule.tex}}
+
+\plush{
+  \resizebox{!}{0.75\textheight}{\input{../tikz/rules.tex}}
+  \par
+  Lambda pairs become \pragma{map} and \pragma{filter} pragmas,
+    are unified into \pragma{distill}, merged,
+    and emitted as one \ff{mapMulti()} call.}
+
+\plush{
+  \pptBanner{RQ1: As Fast as Unrolling, Sometimes Faster}
+  \begin{minipage}{0.9\linewidth}\scriptsize
+  \input{../tables/streamliner-vs-hone/table-compact.tex}
+  \end{minipage}
+  \par
+  }
+
+\plush{
+  \pptBanner{RQ2: Safe on Apache Kafka}
+  \begin{itemize}
+  \item Tag 4.0.0: 992k lines of Java, 142k lines of Scala
+  \item \hone{} injected into \ff{build.gradle}: \emph{15k \ff{.class} files} affected
+  \item All \emph{31,799 unit tests} in 1,511 suites passed, zero modifications
+  \item Build time: 120 \(\to\) 165 minutes
+  \end{itemize}
+  \par
+  \hone{} also optimizes the bytecode of its own releases:
+    50+ releases so far, nothing disrupted.}
+
+\plush{
+  \pptBanner{Takeaways}
+  \begin{itemize}
+  \item On modern JVMs, stream fusion via \ff{mapMulti} matches
+    stream unrolling, with \emph{fewer restrictions}.
+  \item \(\varphi\)-calculus turns bytecode optimization into
+    declarative rewriting: a new optimization is just \emph{new rules}.
+  \item Limits so far: only \ff{map}/\ff{filter} are fused;
+    closures and functional objects are future work.
+  \end{itemize}
+  }
+
+\plush{
+  \pptPunch{
+    \qrcode[height=7em]{https://github.com/objectionary/hone-maven-plugin}}
+  }
 
 \end{document}

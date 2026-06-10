@@ -28,24 +28,11 @@ However, modern JVMs are different.
 \begin{figure*}
 \settwocapwidths{0.45}
 \begin{subfigure}[t]{\firstsf}
-\begin{ffcode}
-public long loop() {
-  long sum = 0L;
-  (*@\highlight{for}@*) (int i=0; i<NN.length; ++i)
-    if (NN[i] % 2 == 0)
-      sum += NN[i] * NN[i];
-  return sum; }
-\end{ffcode}
+\input{snippets/loop.tex}
 \end{subfigure}
 \hfill
 \begin{subfigure}[t]{\secondsf}
-\begin{ffcode}
-public long map() {
-  return IntStream.of(NN)
-    .(*@\highlight{filter}@*)(x -> x % 2 == 0)
-    .(*@\highlight{map}@*)(x -> x * x)
-    .(*@\highlight{sum}@*)(); }
-\end{ffcode}
+\input{snippets/stream.tex}
 \end{subfigure}
 \twofigcaps
   {moller}

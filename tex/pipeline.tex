@@ -8,9 +8,7 @@ The full calculus was introduced by \citet{bugayenko2021eolang}; we use a subset
 \Cref{fig:jeo} shows a stream pipeline compiled to bytecode and then disassembled into a \(\varphi\)-expression.
 Because \phic{} uses composable symbolic structures, its expressions are amenable to rule-based rewriting.
 For example, the following rule transforms \ff{IMUL} to \ff{IADD}, where \(B_1\) and \(B_2\) match any sequence of key–value pairs:
-\begin{phiquation*}
- \frg{pattern}{ [[ B_1, @ -> Q.imul, B_2 ]] } \longrightarrow \frg{replacement}{ [[ B_1, @ -> Q.iadd, B_2 ]] }.
-\end{phiquation*}
+\input{snippets/rule.tex}
 Rules may use functions from \phino{}, our rewriting engine.
 The following rule renames classes matching a pattern:
 \begin{phiquation*}
@@ -25,65 +23,15 @@ We scan bytecode files using the ASM library\footnote{\url{https://asm.ow2.io/}}
 \begin{figure*}
 \setthreecapwidths{0.31}{0.27}
 \begin{subfigure}[t]{\firstsf}
-\begin{ffcode}
-import
-  java.util.stream.*;
-class Numbers {
- int total(int[] a) {
-  return IntStream
-   .of(a)
-   .map((*@\highlight{x -> x * x}@*))
-   .sum();
- }
-}
-\end{ffcode}
+\input{snippets/java.tex}
 \end{subfigure}
 \hfill
 \begin{subfigure}[t]{\secondsf}
-\begin{ffcode}
-public Numbers():
- aload_0
- invokespecial
- return
-public int
-  total(int[]):
- aload_1
- invokestatic
- invokedynamic
- invokeinterface
- invokeinterface
- ireturn
-private static int
-  (*@\highlight{total\textdollar{}0}@*)(int):
- iload_0
- iload_0
- imul
- ireturn
-\end{ffcode}
+\input{snippets/bytecode.tex}
 \end{subfigure}
 \hfill
 \begin{subfigure}[t]{\thirdsf}
-\begin{phiquation*}
-[[ |j\textdollar{}Numbers| -> [[
-  @ -> Q.class,
-  version -> 61,
-  access -> 33,
-  supername ->
-    "java/lang/Object",
-  interfaces -> [[ ]],
-  |j\textdollar{}object\char64init\char64| -> [[\dots]],
-  |j\textdollar{}total| -> [[\dots]],
-  |\highlight{j\textdollar{}total\textdollar{}0}| -> [[
-    @ -> Q.method,
-    access -> 4106,
-    descriptor -> "(I)I",
-    body -> [[
-      @ -> Q.seq.of6,
-      i2 -> [[ @ -> Q.iload, |v| -> 0 ]],
-      i3 -> [[ @ -> Q.iload, |v| -> 0 ]],
-      i4 -> [[ @ -> Q.imul ]],
-      i5 -> [[ @ -> Q.ireturn ]] ]] ]] ]] ]]
-\end{phiquation*}
+\input{snippets/phi.tex}
 \end{subfigure}
 \threefigcaps
   {jeo}

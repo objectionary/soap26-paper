@@ -1,0 +1,10 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+\begin{ffcode}
+var NN = new int[] {1, 1, 2, 3, 5, 8, 13};
+var s = IntStream.of(NN) (*@\label{ln:stream-start}@*)
+  .map(x -> (*@\highlight{x * x}@*))
+  .map(x -> (*@\highlight{x + 1}@*))
+  .sum(); (*@\label{ln:stream-end}@*)
+\end{ffcode}

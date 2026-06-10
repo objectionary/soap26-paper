@@ -14,7 +14,7 @@ files=(paper.tex main.bib)
 while IFS= read -r f; do
     files+=( "${f}" )
 done < <(find tables/ \( -name 'table.tex' -o -name 'table-compact.tex' -o -name 'seconds.tex' \) -type f)
-for d in tex tikz _env; do
+for d in tex tikz snippets _env; do
     while IFS= read -r f; do
         files+=( "${f}" )
     done < <(find "${d}/" -name '*.tex' -type f)

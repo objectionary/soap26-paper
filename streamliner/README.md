@@ -1,6 +1,7 @@
 # Reduced Version of Streamliner
 
-This is a reduced version of [Streamliner], stream fusion/unrolling software that optimizes Java Stream pipelines into procedural loops.
+This is a reduced version of [Streamliner], stream fusion/unrolling
+  software that optimizes Java Stream pipelines into procedural loops.
 
 To run it, simply do:
 

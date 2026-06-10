@@ -4,24 +4,11 @@
 The Stream API\footnote{\url{https://openjdk.org/projects/jdk8/}} introduced in Java~8 makes stream processing more expressive~\citep{kiselyov2017}, but its heavy reliance on virtual calls to temporary objects may make streams slower than imperative loops~\citep{khatchadourian2020study}.
 Stream fusion may help by reducing stream operations and virtual calls~\citep{hirzel2014catalog}.
 Consider the following Java stream pipeline:
-\begin{ffcode}
-var NN = new int[] {1, 1, 2, 3, 5, 8, 13};
-var s = IntStream.of(NN) (*@\label{ln:stream-start}@*)
-  .map(x -> (*@\highlight{x * x}@*))
-  .map(x -> (*@\highlight{x + 1}@*))
-  .sum(); (*@\label{ln:stream-end}@*)
-\end{ffcode}
+\input{snippets/before.tex}
 It can be optimized by joining two \ff{map} operations into one:
-\begin{ffcode}
-var s = IntStream.of(NN).map(
-  x -> (*@\highlight{x * x + 1}@*)).sum();
-\end{ffcode}
+\input{snippets/merged.tex}
 It can be further unrolled into an imperative loop:
-\begin{ffcode}
-var s = 0;
-for (var i = 0; i < NN.length; i++)
-  s += NN[i] * NN[i] + 1;
-\end{ffcode}
+\input{snippets/unrolled.tex}
 
 \citet{moller2020eliminating} introduced \streamliner{}, the first ahead-of-time (AOT) bytecode-to-bytecode optimizer.
 It \emph{unrolls} some stream pipelines into loops, eliminating virtual calls.
@@ -32,11 +19,7 @@ Java~16 extended the Stream API with the \ff{mapMulti} method, which works simil
 We implemented stream \emph{fusion} by combining pairs of \ff{map} and \ff{filter} operations into a single \ff{mapMulti} operation, merging multiple stream operations into one rather than replacing streams with loops.
 After our optimization, the snippet at lines \ref{ln:stream-start}--\ref{ln:stream-end} would look like this:
 
-\begin{ffcode}
-var s = IntStream.of(NN).mapMulti(
-  (x, c) -> { (*@\highlight{c.accept(x * x + 1)}@*); }
-).sum();
-\end{ffcode}
+\input{snippets/fused.tex}
 
 Instead of direct bytecode manipulation, our optimization pipeline is implemented as a rewriting system.
 We disassemble bytecode to \phic{} expressions~\citep{bugayenko2021eolang}, rewrite them, and assemble into bytecode.
