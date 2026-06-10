@@ -1,0 +1,47 @@
+% SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+% SPDX-License-Identifier: MIT
+
+\documentclass{article}
+\usepackage[nominutes,template,scheme=dark]{/code/ctan/ppt-slides/ppt-slides}
+\usepackage{clicks}
+\usepackage{multicol}
+\usepackage{/code/talks/lecture-notes/notes}
+\usepackage{svg}
+\usepackage{tikz}
+
+\definecolor{myblack}{HTML}{000000}
+\definecolor{myred}{HTML}{ED474A}
+
+\renewcommand\emph[1]{\textcolor{myred}{#1}}
+
+\newcommand*{\thetitle}{Compile-Time Java Stream Fusion via \ff{mapMulti}}
+\newcommand*{\theauthor}{Yegor Bugayenko}
+
+\begin{document}
+
+\pagecolor{myblack}
+
+\pptLeft{June 2026}
+\pptRight{@yegor256}
+
+% Slide 1: Title --- paper title, authors (Huawei + Innopolis), SOAP'26 @ PLDI, Boulder
+
+% Slide 2: Motivation --- Java streams are expressive but slow: map().map().sum() example, intermediate objects and virtual calls are the cost
+
+% Slide 3: Prior art --- Streamliner (Møller & Veileborg, 2020) unrolls streams into imperative loops; limitations: escaping lambdas, streams as variables/arguments, and it may even slow code down on JVMs newer than 17
+
+% Slide 4: Our idea --- fuse consecutive map()/filter() into a single mapMulti() (Java 16): before/after code of the same pipeline, one virtual call instead of many
+
+% Slide 5: Toolchain --- bytecode is disassembled into phi-expressions (Jeo), rewritten by 44 rules (Phino), assembled back to bytecode (Hone Maven plugin); no source code changes
+
+% Slide 6: Phi-calculus at work --- the same Java snippet as bytecode and as a phi-expression, plus one example rewrite rule (pattern -> replacement)
+
+% Slide 7: RQ1 (performance) --- benchmark table vs Streamliner on two Zulu JVMs: up to 5x speedup, comparable on most, and never a degradation (unlike Streamliner on filterCount/filterMapCount)
+
+% Slide 8: RQ2 (safety) --- Hone applied to Apache Kafka 4.0.0: 15k .class files optimized, all 31,799 unit tests pass; also 50+ releases of Hone optimized by itself
+
+% Slide 9: Limitations --- terminal operations (allMatch, count) are not fused, build time grows (120 -> 165 min on Kafka), only map/filter pairs so far
+
+% Slide 10: Takeaways --- fusion via mapMulti is as fast as unrolling but safer and simpler; links: hone-maven-plugin on GitHub, Zenodo artifacts, QR code
+
+\end{document}
