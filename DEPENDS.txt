@@ -24,6 +24,7 @@ hard currfile
 hard cyrillic
 hard datetime
 hard debate
+hard doclicense
 hard docshots
 hard doi
 hard enumitem
