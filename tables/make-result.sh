@@ -11,9 +11,9 @@ n=${j%.*}
 
 j=$(echo "${n}" | cut -f2 -d'+')
 if [[ "${csv}" =~ before ]]; then
-    v=$(ggrep -F "${j}" jvms.txt | cut -f3 -d' ')
+    v=$("${GREP:-grep}" -F "${j}" jvms.txt | cut -f3 -d' ')
 else
-    v=$(ggrep -F "${j}" jvms.txt | cut -f4 -d' ')
+    v=$("${GREP:-grep}" -F "${j}" jvms.txt | cut -f4 -d' ')
 fi
 
 # shellcheck disable=SC1091
