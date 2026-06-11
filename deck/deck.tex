@@ -47,9 +47,9 @@
 \plush{
   \pptBanner{Streams Are Expressive, but Believed to Be Slow}
   \begin{multicols}{2}
-  {\small\input{../snippets/loop.tex}}
+  {\scriptsize\input{../snippets/loop.tex}}
   \par\columnbreak\par
-  {\small\input{../snippets/stream.tex}}
+  {\scriptsize\input{../snippets/stream.tex}}
   \end{multicols}
   \par
   Every \ff{map()} and \ff{filter()} creates a new stream object;
@@ -57,10 +57,11 @@
   }
 
 \plush{
-  \pptBanner{Apache Cassandra developers:}
+  \pptBanner{Opinion: Programmers Don't Like Streams}
   \enquote{We quickly realized that Streams and Lambdas were pretty bad
     from a performance point of view; due to this fact,
-    we \emph{stopped using them in hot path}~\citep{mazinanian2017understanding}.}}
+    we \emph{stopped using them in hot path}
+    --- Apache Cassandra Developers~\citep{mazinanian2017understanding}.}}
 
 \plush{
   \pptBanner{Prior Art: \streamliner{} Unrolls Streams into Loops}
@@ -74,7 +75,7 @@
     assigned to variables or passed as arguments.}
 
 \plush{
-  \pptBanner{Modern JVMs Are Smart}
+  \pptBanner{However: Modern JVMs Are Smarter}
   Modern JVMs already run streams well
     (ratio is stream time over loop time):
   \par
@@ -107,7 +108,7 @@
 
 \plush{
   \pptBanner{Bytecode as \(\varphi\)-Expressions}
-  {\scriptsize
+  {\tiny
   \begin{multicols}{3}
   \input{../snippets/java.tex}
   \par\columnbreak\par
