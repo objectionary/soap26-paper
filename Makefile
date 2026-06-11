@@ -57,7 +57,7 @@ export RUNS NUMBERS VENDORS ITERATIONS WARMUPS HONE_VERSION JEO_VERSION PHINO_VE
 
 .PHONY: all env clean test create-fake-tables texqc ultimate docker push
 
-all: env paper.pdf arXiv.zip zenodo.zip texqc premises
+all: env paper.pdf arXiv.zip zenodo.zip texqc
 
 ultimate:
 	start=$$(date '+%s.%N')
@@ -136,7 +136,7 @@ env:
 	echo "👌🏻 Your environment is good enough!"
 
 .SILENT:
-%.pdf: env paper.tex $(TEXS) $(TIKZ) $(TABLES) main.bib _env/os.tex _env/cores.tex _env/ram.tex _env/ghz.tex _env/arch.tex _env/numbers.tex _env/repeat.tex _env/iterations.tex _env/warmups.tex _env/hone-version.tex _env/jeo-version.tex _env/phino-version.tex _env/mistake.tex
+%.pdf: env paper.tex $(TEXS) $(TIKZ) $(TABLES) bibliography/main.bib _env/os.tex _env/cores.tex _env/ram.tex _env/ghz.tex _env/arch.tex _env/numbers.tex _env/repeat.tex _env/iterations.tex _env/warmups.tex _env/hone-version.tex _env/jeo-version.tex _env/phino-version.tex _env/mistake.tex
 	n=$$(basename "$@")
 	n=$${n%.*}
 	latexmk -pdf "$${n}" >>log.txt 2>&1
@@ -144,9 +144,6 @@ env:
 		source ./tables/sdk-use.sh 24.0.2-zulu
 	fi
 	echo "👇🏻 The PDF paper was successfully built and saved to $@ ($$(du -sh "$@" | cut -f1))"
-
-premises: $(TABLES) premises.sh Makefile paper.pdf
-	./premises.sh
 
 texqc: paper.pdf Makefile
 	texqc paper
