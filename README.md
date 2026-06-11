@@ -2,6 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/objectionary/soap26-paper/blob/master/LICENSE.txt)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19837769.svg)](https://doi.org/10.5281/zenodo.19837769)
+[![make](https://github.com/objectionary/soap26-paper/actions/workflows/make.yml/badge.svg)](https://github.com/objectionary/soap26-paper/actions/workflows/make.yml)
 
 This repository contains the experimental artifacts
   and the research paper in LaTeX.
@@ -117,7 +118,6 @@ some other files irrelevant to this experiment.
 [Java Stream API]: https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html
 [Biboudis et al.]: https://arxiv.org/abs/1406.6631
 [Møller et al.]: https://dl.acm.org/doi/abs/10.1145/3428236
-[CI workflow]: https://github.com/objectionary/soap26-paper/actions/workflows/make.yml
 [hone-maven-plugin]: https://github.com/objectionary/hone-maven-plugin
 [jeo-maven-plugin]: https://github.com/objectionary/jeo-maven-plugin
 [Phino]: https://github.com/objectionary/phino

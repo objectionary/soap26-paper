@@ -10,7 +10,7 @@ zip=arXiv.zip
 rm -rf "${dir}"
 rm -rf "${zip}"
 
-files=(paper.tex main.bib)
+files=(paper.tex bibliography/main.bib)
 while IFS= read -r f; do
     files+=( "${f}" )
 done < <(find tables/ \( -name 'table.tex' -o -name 'table-compact.tex' -o -name 'seconds.tex' \) -type f)

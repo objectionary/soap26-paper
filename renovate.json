@@ -5,10 +5,10 @@
   ],
   "packageRules": [
     {
+      "enabled": false,
       "matchPackageNames": [
         "com.ibm.wala:{/,}**"
-      ],
-      "enabled": false
+      ]
     }
   ]
 }
