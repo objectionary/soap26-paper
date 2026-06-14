@@ -7,6 +7,8 @@
 \usepackage{clicks}
 \usepackage{multicol}
 \usepackage{booktabs}
+\usepackage{natbib}
+\usepackage{ffcode}
 \usepackage{mathtools}
 \usepackage{tabularx}
 \usepackage{eolang}
@@ -16,20 +18,19 @@
   \usetikzlibrary{calc}
   \usetikzlibrary{fit}
 
-\renewcommand\emph[1]{\textcolor{orange}{#1}}
-\defbibheading{bibliography}[\refname]{\pptBanner{#1}}
-
+\renewcommand{\familydefault}{\sfdefault}
 \newcommand\anon[2][]{#2}
+\renewcommand\emph[1]{\textcolor{orange}{#1}}
+
 \input{../snippets/macros.tex}
 
 \newcommand*{\thetitle}{map + filter \(\to\) mapMulti}
 \newcommand*{\thesubtitle}{Compile-Time Java Stream Fusion}
 \newcommand*{\theauthor}{\ul{Yegor Bugayenko}, Maxim Trunnikov, and Vladimir Zakharov}
-
-\begin{document}
-
 \pptLeft{SOAP'26 @ PLDI}
 \pptRight{@yegor256}
+
+\begin{document}
 
 % Slide 1: Title --- paper title, authors (Huawei + Innopolis), SOAP'26 @ PLDI, Boulder
 \plush{
@@ -45,36 +46,45 @@
 \newpage
 
 \plush{
-  \pptBanner{Streams Are Expressive, but Believed to Be Slow}
-  \begin{multicols}{2}
-  {\scriptsize\input{../snippets/loop.tex}}
-  \par\columnbreak\par
-  {\scriptsize\input{../snippets/stream.tex}}
-  \end{multicols}
-  \par
-  Every \ff{map()} and \ff{filter()} creates a new stream object;
-    every lambda call is a \emph{virtual call} via \ff{invokedynamic}.
+  \begin{pptMiddle}
+    \pptBanner{Streams Are Expressive, but Believed to Be Slow}
+    \begin{multicols}{2}
+    {\scriptsize\input{../snippets/loop.tex}}
+    \par\columnbreak\par
+    {\scriptsize\input{../snippets/stream.tex}}
+    \end{multicols}
+    \par
+    Every \ff{map()} and \ff{filter()} creates a new stream object;
+      every lambda call is a \emph{virtual call} via \ff{invokedynamic}.
+  \end{pptMiddle}
   }
 
 \plush{
+  \begin{pptMiddle}
   \pptBanner{Opinion: Programmers Don't Like Streams}
   \enquote{We quickly realized that Streams and Lambdas were pretty bad
     from a performance point of view; due to this fact,
     we \emph{stopped using them in hot path}
-    --- Apache Cassandra Developers~\citep{mazinanian2017understanding}.}}
+    --- Apache Cassandra Developers (2017).}
+  \end{pptMiddle}
+  }
 
 \plush{
+  \begin{pptMiddle}
   \pptBanner{Prior Art: \streamliner{} Unrolls Streams into Loops}
   \par
-  \citet{moller2020eliminating} observed a \emph{60\% slowdown}
+  In 2020, Anders M{\o}ller and Oskar Haarklou Veileborg observed a \emph{60\% slowdown}
   of the stream version on Java~13.
   \par
-  The first AOT bytecode-to-bytecode stream
-    optimizer~\citep{moller2020eliminating}; however,
-    objects may not escape lambdas, and streams may not be
-    assigned to variables or passed as arguments.}
+  They created the first AOT bytecode-to-bytecode stream optimizer.
+  \par
+  However, objects couldn't escape lambdas, and streams couldn't be
+  assigned to variables or passed as arguments.
+  \end{pptMiddle}
+  }
 
 \plush{
+  \begin{pptMiddle}
   \pptBanner{However: Modern JVMs Are Smarter}
   Modern JVMs already run streams well
     (ratio is stream time over loop time):
@@ -84,7 +94,9 @@
   \end{minipage}
   \par
   The 60\% degradation exists only in JVMs \emph{older than Java~11};
-    unrolling may even slow short pipelines down.}
+    unrolling may even slow short pipelines down.
+  \end{pptMiddle}
+  }
 
 \plick{
   \pptBanner{Idea: Fuse the Pipeline into a Single \ff{mapMulti()}}
@@ -101,12 +113,15 @@
   RQ2: Can stream fusion via \ff{mapMulti} be applied safely, not disrupting the functionality of existing stream pipelines?}
 
 \plush{
+  \begin{pptMiddle}
   \pptBanner{\hone{}: the Optimization Pipeline}
   \par
   \includegraphics[width=.9\textwidth,height=.75\textheight,keepaspectratio]{figures/workflow.pdf}
+  \end{pptMiddle}
   }
 
 \plush{
+  \begin{pptMiddle}
   \pptBanner{Bytecode as \(\varphi\)-Expressions}
   {\tiny
   \begin{multicols}{3}
@@ -115,30 +130,40 @@
   \input{../snippets/bytecode.tex}
   \par\columnbreak\par
   \input{../snippets/phi.tex}
-  \end{multicols}}}
+  \end{multicols}}
+  \end{pptMiddle}
+  }
 
 \plush{
+  \begin{pptMiddle}
   \pptBanner{Fusion, Rule by Rule (44 Rules in Total)}
   Transformations are \emph{declarative rewriting rules},
     applied repeatedly until none match, for example:
-  \input{../snippets/rule.tex}}
+  \input{../snippets/rule.tex}
+  \end{pptMiddle}
+  }
 
 \plush{
+  \begin{pptMiddle}
   \includegraphics[width=.95\textwidth,height=.6\textheight,keepaspectratio]{figures/rules.pdf}
   \par
   Lambda pairs become \pragma{map} and \pragma{filter} pragmas,
     are unified into \pragma{distill}, merged,
-    and emitted as one \ff{mapMulti()} call.}
+    and emitted as one \ff{mapMulti()} call.
+  \end{pptMiddle}
+  }
 
 \plush{
+  \begin{pptMiddle}
   \pptBanner{RQ1: As Fast as Unrolling, Sometimes Faster}
   \begin{minipage}{0.9\linewidth}\scriptsize
   \input{../tables/streamliner-vs-hone/table-compact.tex}
   \end{minipage}
-  \par
+  \end{pptMiddle}
   }
 
 \plush{
+  \begin{pptMiddle}
   \pptBanner{RQ2: Safe on Apache Kafka}
   \begin{itemize}
   \item Tag 4.0.0: 992k lines of Java, 142k lines of Scala
@@ -148,9 +173,12 @@
   \end{itemize}
   \par
   \hone{} also optimizes the bytecode of its own releases:
-    50+ releases so far, nothing disrupted.}
+    50+ releases so far, nothing disrupted.
+  \end{pptMiddle}
+  }
 
 \plush{
+  \begin{pptMiddle}
   \pptBanner{Takeaways}
   \begin{itemize}
   \item On modern JVMs, stream fusion via \ff{mapMulti} matches
@@ -160,6 +188,7 @@
   \item Limits so far: only \ff{map}/\ff{filter} are fused;
     closures and functional objects are future work.
   \end{itemize}
+  \end{pptMiddle}
   }
 
 \plush{
