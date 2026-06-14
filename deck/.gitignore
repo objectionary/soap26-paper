@@ -1,6 +1,13 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Objectionary.com
+# SPDX-License-Identifier: MIT
+
 deck.bbl-SAVE-ERROR
 deck.bcf
 deck.bcf-SAVE-ERROR
 deck.pdf
 deck.run.xml
+*.java
 figures/*.pdf
+
+!figures/rules.pdf
+!figures/workflow.pdf

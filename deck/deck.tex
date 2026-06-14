@@ -90,7 +90,7 @@
     (ratio is stream time over loop time):
   \par
   \begin{minipage}{0.9\linewidth}\scriptsize
-  \input{../tables/moller-jvms/table-compact.tex}
+  \includegraphics[width=.7\textwidth]{figures/streamliner-vs-jvms.png}
   \end{minipage}
   \par
   The 60\% degradation exists only in JVMs \emph{older than Java~11};
@@ -98,8 +98,29 @@
   \end{pptMiddle}
   }
 
+\begin{ffsave}[megamorphic.java]
+var s = IntStream.of(NN)
+  .map(x -> x * x + 1)
+  .map(x -> x * x + 2)
+  .map(x -> x * x + 3)
+  .map(x -> x * x + 4)
+  .map(x -> x * x + 5)
+  .map(x -> x * x + 6)
+  .map(x -> x * x + 7)
+  .sum();
+\end{ffsave}
+\plush{
+  \begin{pptMiddle}
+  \pptBanner{Still: Larger Pipelines Are Slow, Even in GraalVM 25}
+  \par
+  \ffinput{megamorphic.java}
+  \par
+  This code works 10x slower than a similar loop.
+  \end{pptMiddle}
+  }
+
 \plick{
-  \pptBanner{Idea: Fuse the Pipeline into a Single \ff{mapMulti()}}
+  \pptBanner{Idea: Fuse the Pipeline into a Single \ff{mapMulti()} (Java~16)}
   {\renewcommand\label[1]{}
   \input{../snippets/before.tex}}}
 \plush{Fuse into \ff{mapMulti()} --- Java~16+, may be faster?:
@@ -116,13 +137,13 @@
   \begin{pptMiddle}
   \pptBanner{\hone{}: the Optimization Pipeline}
   \par
-  \includegraphics[width=.9\textwidth,height=.75\textheight,keepaspectratio]{figures/workflow.pdf}
+  \includegraphics[width=.6\textwidth]{figures/workflow.pdf}
   \end{pptMiddle}
   }
 
 \plush{
   \begin{pptMiddle}
-  \pptBanner{Bytecode as \(\varphi\)-Expressions}
+  \pptBanner{Bytecode as \(\varphi\)-Calculus Expressions}
   {\tiny
   \begin{multicols}{3}
   \input{../snippets/java.tex}
@@ -145,7 +166,7 @@
 
 \plush{
   \begin{pptMiddle}
-  \includegraphics[width=.95\textwidth,height=.6\textheight,keepaspectratio]{figures/rules.pdf}
+  \includegraphics[width=.95\textwidth]{figures/rules.pdf}
   \par
   Lambda pairs become \pragma{map} and \pragma{filter} pragmas,
     are unified into \pragma{distill}, merged,
@@ -169,7 +190,7 @@
   \item Tag 4.0.0: 992k lines of Java, 142k lines of Scala
   \item \hone{} injected into \ff{build.gradle}: \emph{15k \ff{.class} files} affected
   \item All \emph{31,799 unit tests} in 1,511 suites passed, zero modifications
-  \item Build time: 120 \(\to\) 165 minutes
+  \item Build time: 120 \(\to\) 165 minutes (+38\%)
   \end{itemize}
   \par
   \hone{} also optimizes the bytecode of its own releases:
