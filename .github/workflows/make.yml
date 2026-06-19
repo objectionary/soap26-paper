@@ -20,7 +20,7 @@ jobs:
           submodules: true
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.4.9
+          ruby-version: 4.0.5
       - run: gem install texsc texqc
       - run: |
           sudo apt-get update
